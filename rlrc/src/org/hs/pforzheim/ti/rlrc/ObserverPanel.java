@@ -3,6 +3,7 @@
  */
 package org.hs.pforzheim.ti.rlrc;
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.ComponentSampleModel;
@@ -11,8 +12,6 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 
-import javax.swing.JPanel;
-
 import org.hs.pforzheim.ti.ni.NIImage;
 import org.hs.pforzheim.ti.ni.NaturalInterface;
 
@@ -20,11 +19,9 @@ import org.hs.pforzheim.ti.ni.NaturalInterface;
  * @author schrob
  *
  */
-public class ObserverPanel extends JPanel implements Runnable {
+public class ObserverPanel extends Component {
 	
-	private static final long serialVersionUID = 7848069502421856447L;
-
-	private volatile boolean isRunning;
+	private static final long serialVersionUID = 1L;
 	
 	private NaturalInterface ni;
 
@@ -33,33 +30,20 @@ public class ObserverPanel extends JPanel implements Runnable {
 	public ObserverPanel(NaturalInterface ni) {
 		this.ni = ni;
 		
-		new Thread(this).start();
+		//new Thread(this).start();
 		
 	}
 
-	public void close() {
-		isRunning = false;
-	}
-
-	@Override
-	public void run() {
-		isRunning = true;
-		while(isRunning) {
-			depthImage = ni.depthImage();
-			
-		}
-		
-	}
 	
 	@Override
-	public void paintComponents(Graphics g) {
-		super.paintComponents(g);
-		
+	public void paint(Graphics g) {
+
+		depthImage = ni.colorImage();
 		if(depthImage != null) {
 			DataBuffer dataBuffer = new DataBufferByte(depthImage.getImage(), depthImage.getImage().length);
 			
 			SampleModel sampleModel = new ComponentSampleModel(DataBuffer.TYPE_BYTE,
-					depthImage.getWidth(), depthImage.getHeight(), 1, depthImage.getWidth(), new int[]{2,1,0});
+					depthImage.getWidth(), depthImage.getHeight(), 3, depthImage.getWidth() * 3, new int[]{0,1,2});
 			
 			Raster raster = Raster.createRaster(sampleModel, dataBuffer, null);
 			
@@ -69,6 +53,22 @@ public class ObserverPanel extends JPanel implements Runnable {
 			
 			g.drawImage(bufferedImage, 0, 0, null);
 		}
+		
+		super.paint(g);
+	}
+	
+	
+	
+	@Override
+	public int getWidth() {
+		//TODO
+		return 640;
+	}
+	
+	@Override
+	public int getHeight() {
+		//TODO
+		return 480;
 	}
 
 }
