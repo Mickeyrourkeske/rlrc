@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="/usr/share/java/org.OpenNI.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/jogl/jogl.jar"/>
 	<classpathentry kind="lib" path="/usr/share/java/jogl/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/com.primesense.NITE.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
