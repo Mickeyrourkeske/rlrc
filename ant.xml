@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project rlrc with Jar-in-Jar Loader">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="/home/fred/git/RLRC/rlrc.jar">
+            <manifest>
+                <attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader"/>
+                <attribute name="Rsrc-Main-Class" value="org.hs.pforzheim.ti.rlrc.Main"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="Rsrc-Class-Path" value="./ javacpp.jar javacv-linux-x86_64.jar javacv-linux-arm.jar javacv-linux-x86.jar javacv-macosx-x86_64.jar javacv-windows-x86.jar javacv-windows-x86_64.jar javacv.jar org.OpenNI.jar jogl.jar gluegen-rt.jar"/>
+            </manifest>
+            <zipfileset src="jar-in-jar-loader.zip"/>
+            <fileset dir="/home/fred/git/RLRC/bin"/>
+            <zipfileset dir="/usr/share/java/javacv" includes="javacpp.jar"/>
+            <zipfileset dir="/usr/share/java/javacv" includes="javacv-linux-x86_64.jar"/>
+            <zipfileset dir="/usr/share/java/javacv" includes="javacv-linux-arm.jar"/>
+            <zipfileset dir="/usr/share/java/javacv" includes="javacv-linux-x86.jar"/>
+            <zipfileset dir="/usr/share/java/javacv" includes="javacv-macosx-x86_64.jar"/>
+            <zipfileset dir="/usr/share/java/javacv" includes="javacv-windows-x86.jar"/>
+            <zipfileset dir="/usr/share/java/javacv" includes="javacv-windows-x86_64.jar"/>
+            <zipfileset dir="/usr/share/java/javacv" includes="javacv.jar"/>
+            <zipfileset dir="/usr/share/java" includes="org.OpenNI.jar"/>
+            <zipfileset dir="/usr/share/java/jogl" includes="jogl.jar"/>
+            <zipfileset dir="/usr/share/java/jogl" includes="gluegen-rt.jar"/>
+        </jar>
+    </target>
+</project>
