@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project rlrc with libraries in sub-folder">
+<project default="create_run_jar" name="Create Runnable Jar for Project rlrc">
     <!--this file was created by Eclipse Runnable JAR Export Wizard-->
     <!--ANT 1.7 is required                                        -->
     <target name="create_run_jar">
-        <jar destfile="/home/fred/git/RLRC/rlrc.jar">
+        <jar destfile="/home/schrob/git/RLRC/rlrc.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="org.hs.pforzheim.ti.rlrc.Main"/>
-                <attribute name="Class-Path" value=". rlrc_lib/javacpp.jar rlrc_lib/javacv-linux-x86_64.jar rlrc_lib/javacv-linux-arm.jar rlrc_lib/javacv-linux-x86.jar rlrc_lib/javacv-macosx-x86_64.jar rlrc_lib/javacv-windows-x86.jar rlrc_lib/javacv-windows-x86_64.jar rlrc_lib/javacv.jar rlrc_lib/org.OpenNI.jar rlrc_lib/jogl.jar rlrc_lib/gluegen-rt.jar rlrc_lib/com.primesense.NITE.jar"/>
+                <attribute name="Class-Path" value="."/>
             </manifest>
-            <fileset dir="/home/fred/git/RLRC/bin"/>
+            <fileset dir="/home/schrob/git/RLRC/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/share/java/javacv/javacpp.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/share/java/javacv/javacv-linux-x86_64.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/share/java/javacv/javacv-linux-arm.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/share/java/javacv/javacv-linux-x86.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/share/java/javacv/javacv-macosx-x86_64.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/share/java/javacv/javacv-windows-x86.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/share/java/javacv/javacv-windows-x86_64.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/share/java/javacv/javacv.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/share/java/org.OpenNI.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/share/java/jogl/jogl.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/share/java/jogl/gluegen-rt.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/usr/share/java/com.primesense.NITE.jar"/>
         </jar>
-        <delete dir="/home/fred/git/RLRC/rlrc_lib"/>
-        <mkdir dir="/home/fred/git/RLRC/rlrc_lib"/>
-        <copy file="/usr/share/java/javacv/javacpp.jar" todir="/home/fred/git/RLRC/rlrc_lib"/>
-        <copy file="/usr/share/java/javacv/javacv-linux-x86_64.jar" todir="/home/fred/git/RLRC/rlrc_lib"/>
-        <copy file="/usr/share/java/javacv/javacv-linux-arm.jar" todir="/home/fred/git/RLRC/rlrc_lib"/>
-        <copy file="/usr/share/java/javacv/javacv-linux-x86.jar" todir="/home/fred/git/RLRC/rlrc_lib"/>
-        <copy file="/usr/share/java/javacv/javacv-macosx-x86_64.jar" todir="/home/fred/git/RLRC/rlrc_lib"/>
-        <copy file="/usr/share/java/javacv/javacv-windows-x86.jar" todir="/home/fred/git/RLRC/rlrc_lib"/>
-        <copy file="/usr/share/java/javacv/javacv-windows-x86_64.jar" todir="/home/fred/git/RLRC/rlrc_lib"/>
-        <copy file="/usr/share/java/javacv/javacv.jar" todir="/home/fred/git/RLRC/rlrc_lib"/>
-        <copy file="/usr/share/java/org.OpenNI.jar" todir="/home/fred/git/RLRC/rlrc_lib"/>
-        <copy file="/usr/share/java/jogl/jogl.jar" todir="/home/fred/git/RLRC/rlrc_lib"/>
-        <copy file="/usr/share/java/jogl/gluegen-rt.jar" todir="/home/fred/git/RLRC/rlrc_lib"/>
-        <copy file="/usr/share/java/com.primesense.NITE.jar" todir="/home/fred/git/RLRC/rlrc_lib"/>
     </target>
 </project>
