@@ -36,10 +36,9 @@ public class rlrcPanel {
         return capabilities;
     }
 	
-	public rlrcPanel(NaturalInterface ni) {
-		this.ni = ni;
-		observerPanel = new ObserverPanel(ni);
-		observer3dPanel = new Observer3DPanel(840, 600, createGLCapabilities());
+	public rlrcPanel() {
+		observerPanel = new ObserverPanel();
+		//observer3dPanel = new Observer3DPanel(840, 600, createGLCapabilities());
 		
 		frame = new JFrame("Image Viewer");
 		
@@ -72,9 +71,9 @@ public class rlrcPanel {
 //		frame.getContentPane().add(observerPanel);
 //		frame.getContentPane().add(observer3dPanel);
 		
-		frame.setLayout(new FlowLayout());
-		//frame.add(this.observerPanel);
-		frame.add(this.observer3dPanel);
+		//frame.setLayout(new FlowLayout());
+		frame.add(this.observerPanel);
+		//frame.add(this. );
 		frame.pack();
 		frame.setVisible(true);
 		frame.setSize(this.observerPanel.getWidth(), this.observerPanel.getHeight());

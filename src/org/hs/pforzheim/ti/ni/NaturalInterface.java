@@ -5,6 +5,8 @@ package org.hs.pforzheim.ti.ni;
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.OpenNI.Context;
 import org.OpenNI.DepthGenerator;
@@ -12,7 +14,6 @@ import org.OpenNI.DepthMetaData;
 import org.OpenNI.GeneralException;
 import org.OpenNI.ImageGenerator;
 import org.OpenNI.ImageMetaData;
-import org.OpenNI.License;
 import org.OpenNI.MapOutputMode;
 import org.OpenNI.StatusException;
 
@@ -35,37 +36,46 @@ public class NaturalInterface {
 	 * 
 	 * @throws GeneralException
 	 */
-	public NaturalInterface() throws GeneralException {
-		context = new Context();
-		
-		//TODO License??? mit xml file? ganz weglassen. so nicht gut
-		
-//		License license = new License("PrimeSense", "0KOIk2JeIBYClPWVnMoRKn5cdY4=");
-//		context.addLicense(license);
-		
-		
-		DepthGenerator depthGenerator = DepthGenerator.create(context);
-		ImageGenerator imageGenerator = ImageGenerator.create(context);
-		
-		MapOutputMode mapMode = new MapOutputMode(xRes, yRes, FPS);
-		depthGenerator.setMapOutputMode(mapMode);
-		imageGenerator.setMapOutputMode(mapMode);
-		
-		context.setGlobalMirror(mirror);
-		
-		depthMetaData = depthGenerator.getMetaData();
-		imageMetaData = imageGenerator.getMetaData();
-		//TODO generate more maps, scene, sceleton
-		
-		imageMetaData.setFullXRes(xRes);
-		imageMetaData.setFullYRes(yRes);
-		
-		context.startGeneratingAll();
+	public NaturalInterface() {
+		Logger.getLogger("rlrc").log(Level.INFO, "Initializing NI...");
+		try {
+			context = new Context();
+			
+			//TODO License??? mit xml file? ganz weglassen. so nicht gut
+			
+	//		License license = new License("PrimeSense", "0KOIk2JeIBYClPWVnMoRKn5cdY4=");
+	//		context.addLicense(license);
+			
+			
+			DepthGenerator depthGenerator = DepthGenerator.create(context);
+			ImageGenerator imageGenerator = ImageGenerator.create(context);
+			
+			MapOutputMode mapMode = new MapOutputMode(xRes, yRes, FPS);
+			depthGenerator.setMapOutputMode(mapMode);
+			imageGenerator.setMapOutputMode(mapMode);
+			
+			context.setGlobalMirror(mirror);
+			
+			depthMetaData = depthGenerator.getMetaData();
+			imageMetaData = imageGenerator.getMetaData();
+			//TODO generate more maps, scene, sceleton
+			
+			imageMetaData.setFullXRes(xRes);
+			imageMetaData.setFullYRes(yRes);
+			
+			context.startGeneratingAll();
+			Logger.getLogger("rlrc").log(Level.INFO, "NI succesfully initialized");
+		}
+		catch (GeneralException e) {
+			Logger.getLogger("rlrc").log(Level.SEVERE, "Initializing NI failed! " + e.getMessage());
+			Logger.getLogger("rlrc").log(Level.SEVERE, "Terminating!");
+			System.exit(-1);
+		}
 	}
 	
 	
 	public NIImage depthImage() {
-		
+		//TODO irgendwas falsch ab 5m?????
 		byte[] image = new byte[depthMetaData.getFullXRes() * depthMetaData.getFullYRes() * 3];
 		
 		try {

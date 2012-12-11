@@ -3,6 +3,10 @@
  */
 package org.hs.pforzheim.ti.rlrc;
 
+import java.awt.Dimension;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.media.opengl.DebugGL;
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
@@ -24,10 +28,14 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 	
 	private Animator animator;
 	private GLU glu;
+	private Dimension dimension;
 	
-	public Observer3DPanel(int width, int height, GLCapabilities capabilities) {
-		super(capabilities);
-		setSize(width, height);
+	public Observer3DPanel() {
+		super(createGLCapabilities());
+		Logger.getLogger("rlrc").log(Level.INFO, "Starting OpenGL Observer");
+		dimension = new Dimension(640, 480);
+		
+		setSize(dimension);
 		addGLEventListener(this);
 	}
 	
@@ -57,6 +65,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 	@Override
 	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
 		// TODO Auto-generated method stub
+		display(drawable);
 		
 	}
 	
@@ -77,6 +86,8 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 		}
 		
 	}
+	
+	
 
 	private void setCamera(GL gl, GLU glu, float distance) {
         // Change to projection matrix.
@@ -94,6 +105,45 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
        
     }
 
+	private static GLCapabilities createGLCapabilities() {
+        GLCapabilities capabilities = new GLCapabilities();
+        capabilities.setRedBits(8);
+        capabilities.setBlueBits(8);
+        capabilities.setGreenBits(8);
+        capabilities.setAlphaBits(8);
+        return capabilities;
+    }	
 	
+
+	@Override
+	public int getWidth() {
+		return dimension.width;
+	}
+	
+	@Override
+	public int getHeight() {
+		return dimension.height;
+	}
+	
+	@Override
+	public Dimension getSize() {
+		return dimension;
+	}
+	
+	@Override
+	public Dimension getPreferredSize() {
+		return dimension;
+	}
+	
+	@Override
+	public Dimension getMaximumSize() {
+		return dimension;
+	}
+	
+	@Override
+	public Dimension getMinimumSize() {
+		return dimension;
+	}
+
 
 }
