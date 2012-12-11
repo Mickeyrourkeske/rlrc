@@ -9,19 +9,14 @@ package org.hs.pforzheim.ti.ni;
  */
 public class NIImage {
 
-	private byte[] image;
-	private int width;
-	private int height;
-	
-	public NIImage(byte[] image, int width, int height) {
-		this.image = image;
+	protected int width;
+	protected int height;
+
+	public NIImage(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}
 	
-	public byte[] getImage() {
-		return image;
-	}
 	
 	public int getWidth() {
 		return width;

@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ComponentSampleModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferShort;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.util.logging.Level;
@@ -20,6 +21,7 @@ import java.util.logging.Logger;
 import javax.swing.Timer;
 
 import org.hs.pforzheim.ti.ni.NICollector;
+import org.hs.pforzheim.ti.ni.NIDepthImage;
 import org.hs.pforzheim.ti.ni.NIImage;
 import org.hs.pforzheim.ti.ni.NaturalInterface;
 
@@ -33,7 +35,6 @@ public class ObserverPanel extends Component {
 	
 	private NaturalInterface ni;
 
-	private NIImage image;
 	private Dimension dimension;
 	
 	private int delay = 50;
@@ -48,7 +49,7 @@ public class ObserverPanel extends Component {
 		Logger.getLogger("rlrc").log(Level.INFO, "Starting Image Observer");
 		if(NICollector.ni != null) {
 			this.ni = NICollector.ni;
-			image = ni.depthImage();
+			NIImage image = ni.image();
 			dimension = new Dimension(image.getWidth(), image.getHeight());
 			
 			timer.start();
@@ -64,21 +65,40 @@ public class ObserverPanel extends Component {
 	@Override
 	public void paint(Graphics g) {
 		if(ni != null) {
-			image = ni.depthImage();
+			NIDepthImage image = ni.depthImage();
 			if(image != null) {
 				DataBuffer dataBuffer = new DataBufferByte(image.getImage(), image.getImage().length);
 				
-				SampleModel sampleModel = new ComponentSampleModel(DataBuffer.TYPE_BYTE,
-						image.getWidth(), image.getHeight(), 3, image.getWidth() * 3, new int[]{0,1,2});
+				SampleModel sampleModel = new ComponentSampleModel(DataBufferShort.TYPE_BYTE,
+						image.getWidth(), image.getHeight(), 1, image.getWidth(), new int[]{0});
 				
 				Raster raster = Raster.createRaster(sampleModel, dataBuffer, null);
 				
 				BufferedImage bufferedImage = new BufferedImage(
-						image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+						image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
 				bufferedImage.setData(raster);
 				
 				g.drawImage(bufferedImage, 0, 0, null);
 			}
+			
+			
+			
+			//TODO switch
+//			NIColorImage image = ni.colorImage();
+//			if(image != null) {
+//				DataBuffer dataBuffer = new DataBufferByte(image.getImage(), image.getImage().length);
+//				
+//				SampleModel sampleModel = new ComponentSampleModel(DataBuffer.TYPE_BYTE,
+//						image.getWidth(), image.getHeight(), 3, image.getWidth() * 3, new int[]{0,1,2});
+//				
+//				Raster raster = Raster.createRaster(sampleModel, dataBuffer, null);
+//				
+//				BufferedImage bufferedImage = new BufferedImage(
+//						image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+//				bufferedImage.setData(raster);
+//				
+//				g.drawImage(bufferedImage, 0, 0, null);
+//			}
 		}
 		super.paint(g);
 	}

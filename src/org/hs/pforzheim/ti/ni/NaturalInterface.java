@@ -74,9 +74,12 @@ public class NaturalInterface {
 	}
 	
 	
-	public NIImage depthImage() {
-		//TODO irgendwas falsch ab 5m?????
-		byte[] image = new byte[depthMetaData.getFullXRes() * depthMetaData.getFullYRes() * 3];
+	public NIImage image() {
+		return new NIImage(xRes, yRes);
+	}
+	
+	public NIDepthImage depthImage() {
+		byte[] image = new byte[depthMetaData.getFullXRes() * depthMetaData.getFullYRes()];
 		
 		try {
 			context.waitAnyUpdateAll();
@@ -86,22 +89,19 @@ public class NaturalInterface {
 		}
 		
 		ShortBuffer buffer = depthMetaData.getData().createShortBuffer();
-		
+		float[] histogram = calcHistogram(buffer);
 		buffer.rewind();
 		
 		while(buffer.remaining() > 0) {
 			int pos = buffer.position();
-			byte pixel = (byte) (buffer.get() >> 4);
-			image[pos * 3] = pixel;
-			image[pos * 3 + 1] = pixel;
-			image[pos * 3 + 2] = pixel;
-			//System.out.printf("%#X\n", pixel);
-			//System.out.println(image[pos * 3] + image[pos * 3 + 1] + image[pos * 3 + 2]);
+			short pixel = buffer.get();
+			image[pos] = (byte)histogram[pixel];
 		}
-		return new NIImage(image, depthMetaData.getFullXRes(), depthMetaData.getFullYRes());
+
+		return new NIDepthImage(image, depthMetaData.getFullXRes(), depthMetaData.getFullYRes());
 	}
 	
-	public NIImage colorImage() {
+	public NIColorImage colorImage() {
 		byte[] image = new byte[imageMetaData.getFullXRes() * imageMetaData.getFullYRes() * 3];
 		
 		try {
@@ -119,7 +119,39 @@ public class NaturalInterface {
 
 			//System.out.printf("%#X\n", pixel);
 		}
-		return new NIImage(image, imageMetaData.getFullXRes(), imageMetaData.getFullYRes());
+		return new NIColorImage(image, imageMetaData.getFullXRes(), imageMetaData.getFullYRes());
 		
+	}
+	
+	private float []calcHistogram(ShortBuffer depthBuffer) {
+		int MAX_DEPTH_SIZE = 10000;
+		float[] histogram = new float[MAX_DEPTH_SIZE];
+	
+		int numPoints = 0; 
+		int maxDepth = 0;
+		
+		// a depth (an integer mm value) is used as an index  
+		// into the array 
+		while(depthBuffer.remaining() > 0) { 
+			short depthVal = depthBuffer.get(); 
+			if(depthVal > maxDepth) 
+				maxDepth = depthVal; 
+			if((depthVal != 0)  && (depthVal < MAX_DEPTH_SIZE)) { 
+				histogram[depthVal]++; 
+				numPoints++; 
+			} 
+		} 
+		
+		// convert into a cummulative depth count (skipping histogram[0]) 
+		for (int i = 1; i <= maxDepth; i++)    // stage 3 
+			histogram[i] += histogram[i - 1]; 
+		
+		// convert cummulative depth into integers (0-255)
+		if (numPoints > 0) { 
+			for (int i = 1; i <= maxDepth; i++)   // skip histogram[0] 
+				histogram[i] = (int) (256 * (1.0f - (histogram[i] / (float) numPoints))); 
+		}
+		
+		return histogram;
 	}
 }
