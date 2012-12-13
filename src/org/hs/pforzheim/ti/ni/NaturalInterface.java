@@ -73,12 +73,7 @@ public class NaturalInterface {
 		}
 	}
 	
-	
-	public NIImage image() {
-		return new NIImage(xRes, yRes);
-	}
-	
-	public NIDepthImage depthImage() {
+	public NIImage depthImage() {
 		byte[] image = new byte[depthMetaData.getFullXRes() * depthMetaData.getFullYRes()];
 		
 		try {
@@ -98,10 +93,10 @@ public class NaturalInterface {
 			image[pos] = (byte)histogram[pixel];
 		}
 
-		return new NIDepthImage(image, depthMetaData.getFullXRes(), depthMetaData.getFullYRes());
+		return new NIImage(image, depthMetaData.getFullXRes(), depthMetaData.getFullYRes());
 	}
 	
-	public NIColorImage colorImage() {
+	public NIImage colorImage() {
 		byte[] image = new byte[imageMetaData.getFullXRes() * imageMetaData.getFullYRes() * 3];
 		
 		try {
@@ -119,7 +114,7 @@ public class NaturalInterface {
 
 			//System.out.printf("%#X\n", pixel);
 		}
-		return new NIColorImage(image, imageMetaData.getFullXRes(), imageMetaData.getFullYRes());
+		return new NIImage(image, imageMetaData.getFullXRes(), imageMetaData.getFullYRes());
 		
 	}
 	
