@@ -15,6 +15,7 @@ import org.OpenNI.GeneralException;
 import org.OpenNI.ImageGenerator;
 import org.OpenNI.ImageMetaData;
 import org.OpenNI.MapOutputMode;
+import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
 
 /**
@@ -29,9 +30,12 @@ public class NaturalInterface {
 	private static final int xRes = 640;
 	private static final int yRes = 480;
 	private static final int FPS = 30;
+	private static final int FREQ = 5;
 	
 	private DepthMetaData depthMetaData;
 	private ImageMetaData imageMetaData;
+	
+	private DepthGenerator depthGenerator;
 	/**
 	 * 
 	 * @throws GeneralException
@@ -47,7 +51,7 @@ public class NaturalInterface {
 	//		context.addLicense(license);
 			
 			
-			DepthGenerator depthGenerator = DepthGenerator.create(context);
+			depthGenerator = DepthGenerator.create(context);
 			ImageGenerator imageGenerator = ImageGenerator.create(context);
 			
 			MapOutputMode mapMode = new MapOutputMode(xRes, yRes, FPS);
@@ -85,7 +89,6 @@ public class NaturalInterface {
 		
 		ShortBuffer buffer = depthMetaData.getData().createShortBuffer();
 		float[] histogram = calcHistogram(buffer);
-		buffer.rewind();
 		
 		while(buffer.remaining() > 0) {
 			int pos = buffer.position();
@@ -146,7 +149,74 @@ public class NaturalInterface {
 			for (int i = 1; i <= maxDepth; i++)   // skip histogram[0] 
 				histogram[i] = (int) (256 * (1.0f - (histogram[i] / (float) numPoints))); 
 		}
+		depthBuffer.rewind();
 		
 		return histogram;
+	}
+	
+	public Point3D[] getPoints() {
+		try {
+			context.waitAnyUpdateAll();
+		} catch (StatusException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ShortBuffer buffer = depthMetaData.getData().createShortBuffer();
+		
+		
+		
+		
+		Point3D[] points = new Point3D[buffer.capacity() / FREQ];
+//		int i = 0;
+//		for(int y = 0; y < yRes; y++) {
+//			for(int x = 0; x < xRes; x++) {
+//				i = y + x;
+//				points[i] = new Point3D(xRes, yRes, 0);
+//			}
+//		}
+		
+		
+		int i = 0;
+		buffer.get();
+		while(buffer.remaining() > 0) {
+			int pos = buffer.position();
+			float z = -(float)buffer.get();
+			
+			if((pos % FREQ) == 0) {
+				i++;
+				int x = pos % xRes;
+				int y = yRes - (pos / xRes);
+				points[i] = new Point3D(x, y, z);
+			}
+		}
+		
+		
+//		try {
+//			depthGenerator.getAlternativeViewpointCapability().setViewpoint(depthGenerator);
+//		
+//		
+//		
+//			points = depthGenerator.convertProjectiveToRealWorld(points);
+//			
+//			System.out.println(points[0].getX() + " " + points[0].getY() + " " + points[0].getZ() + " ");
+//		} catch (StatusException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		return points;
+	}
+	
+	private int getMaxDepth(ShortBuffer depthBuffer) {
+
+	    int maxDepth = 0;
+	    while (depthBuffer.remaining() > 0) {
+	      short depthVal = depthBuffer.get();
+	      if (depthVal > maxDepth)
+	        maxDepth = depthVal;
+	    }
+	    depthBuffer.rewind();
+
+	    return maxDepth;
 	}
 }
