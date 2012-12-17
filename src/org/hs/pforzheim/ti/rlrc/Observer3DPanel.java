@@ -19,6 +19,7 @@ import javax.media.opengl.glu.GLU;
 
 import org.OpenNI.Point3D;
 import org.hs.pforzheim.ti.ni.NICollector;
+import org.hs.pforzheim.ti.ni.NaturalInterface;
 
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.FPSAnimator;
@@ -35,7 +36,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 	private GLU glu;
 	private Dimension dimension;
 	private int mouseX;
-	private int position = 0;
+	private int position = -90;
 	
 	public Observer3DPanel() {
 		super(createGLCapabilities());
@@ -84,38 +85,69 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 			GL gl = drawable.getGL();
 			gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 			
-			//setCamera(gl, glu, 1000); 
+			setCamera(gl, glu, 10000); 
 
-	        gl.glMatrixMode(GL.GL_PROJECTION);
-			gl.glTranslatef(getWidth()/2, getHeight()/2, -1000);
-			gl.glRotatef(75, 1, 0, 0);
+//			float SHINE_ALL_DIRECTIONS = 1;
+//	        float[] lightPos = {0, 0, 0, SHINE_ALL_DIRECTIONS};
+//	        float[] lightColorAmbient = {0.8f, 0.8f, 0.8f, 1f};
+//	        float[] lightColorSpecular = {0.9f, 0.9f, 0.9f, 1f};
+//
+//	        // Set light parameters.
+//	        gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, lightPos, 0);
+//	        gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, lightColorAmbient, 0);
+//	        gl.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, lightColorSpecular, 0);
+//
+//	        // Enable lighting in GL.
+//	        gl.glEnable(GL.GL_LIGHT1);
+//	        gl.glEnable(GL.GL_LIGHTING);
 			
-
-			gl.glTranslatef(0, 0, 1000);
-			gl.glRotatef(position, 0, 1, 0);
+		
 
 			
 			gl.glPointSize(1.0f);
 			gl.glBegin(GL.GL_POINTS);
 			
-			
-	        Point3D[] points = NICollector.ni.getPoints();
+	        Point3D[] points = NICollector.ni.getRealWorldPoints();
 	        if(points != null) {
 	        	for(int i = 0; i < points.length; i++) {
 	        		
 	        		if(points[i] != null) {
 		        		gl.glVertex3f(points[i].getX(), points[i].getY(), points[i].getZ());
-	        			
 	        		}
 	        	}
 	        }
 			
+//	        gl.glColor3f(0.9f, 0.5f, 0.2f);
+//			gl.glBegin(GL.GL_QUADS);
+//			Point3D[] points = NICollector.ni.getRealWorldPoints();
+//			
+//			int row = 640/NaturalInterface.FREQ;
+//	        if(points != null) {
+//	        	for(int index1 = 0; index1 < points.length - row - 1; index1++) {
+//	        		
+//	        		if(points[index1] != null) {
+//	        			int index2 = index1 + 1;
+//	        			int index3 = index1 + row;
+//	        			int index4 = index3 + 1;
+//	        			
+//		        		gl.glVertex3f(points[index1].getX(), points[index1].getY(), points[index1].getZ());
+//		        		gl.glVertex3f(points[index2].getX(), points[index2].getY(), points[index2].getZ());
+//		        		gl.glVertex3f(points[index3].getX(), points[index3].getY(), points[index3].getZ());
+//		        		gl.glVertex3f(points[index4].getX(), points[index4].getY(), points[index4].getZ());
+//		        		
+//		        		
+//	        		}
+//	        	}
+//	        }
+	        
+	        
 //	        gl.glColor3f(0.9f, 0.5f, 0.2f);
 //	        gl.glBegin(GL.GL_TRIANGLE_FAN);
 //	        gl.glVertex3f(-20, -20, 0);
 //	        gl.glVertex3f(+20, -20, 0);
 //	        gl.glVertex3f(0, 20, 0);
 	        gl.glEnd();
+	        
 	        
 		}
 		
@@ -140,7 +172,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
          * zNear	Entfernung vom Betrachter zur nahen Z-Schnittflaeche (muss positiv sein).
          * zFar		Entfernung vom Betrachter zur fernen Z-Schnittflaeche (muss positiv sein).
          */
-        glu.gluPerspective(position, widthHeightRatio, 1, 1000);
+        glu.gluPerspective(45, 4/3, 500, 10000);
         
         /*
          * procedure gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz : glDouble);
@@ -150,7 +182,12 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
          * centerX, centerY, centerZ	 Gibt die Position des Refernenzpunktes an, auf den "geblickt" wird.
          * upX, upY, upZ	 Gibt die Richtung des Vektors an, der nach oben zeigt.
          */
-        glu.gluLookAt(getWidth()/2, getHeight()/2, distance, getWidth()/2, getHeight()/2, 0, 0, 1, 0);
+        double spinningDistance = 1000;
+        double angle = (double)position * (Math.PI/180);
+        double x = Math.cos(angle) * spinningDistance;
+        double z = Math.sin(angle) * spinningDistance + spinningDistance;
+        
+        glu.gluLookAt(x, 0, z, 0, 0, 500, 0, 1, 0);
 //        glu.gluPerspective(45, widthHeightRatio, 1, 1000);
 //        glu.gluLookAt(0, 0, distance, 0, 0, 0, 0, 1, 0);
         // Change back to model view matrix.
