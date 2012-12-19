@@ -102,24 +102,6 @@ public class ObserverPanel extends Component {
 				g.drawImage(bufferedImage, 0, 0, null);
 			}
 			
-			
-			
-			//TODO switch
-//			NIColorImage image = ni.colorImage();
-//			if(image != null) {
-//				DataBuffer dataBuffer = new DataBufferByte(image.getImage(), image.getImage().length);
-//				
-//				SampleModel sampleModel = new ComponentSampleModel(DataBuffer.TYPE_BYTE,
-//						image.getWidth(), image.getHeight(), 3, image.getWidth() * 3, new int[]{0,1,2});
-//				
-//				Raster raster = Raster.createRaster(sampleModel, dataBuffer, null);
-//				
-//				BufferedImage bufferedImage = new BufferedImage(
-//						image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-//				bufferedImage.setData(raster);
-//				
-//				g.drawImage(bufferedImage, 0, 0, null);
-//			}
 		}
 		super.paint(g);
 	}
