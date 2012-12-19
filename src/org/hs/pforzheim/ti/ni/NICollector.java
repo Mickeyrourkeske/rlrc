@@ -16,6 +16,10 @@
  */
 package org.hs.pforzheim.ti.ni;
 
+import java.util.ArrayList;
+
+import org.hs.pforzheim.ti.rlrc.Agent;
+
 
 /**
  * @author schrob
@@ -24,8 +28,12 @@ package org.hs.pforzheim.ti.ni;
 public class NICollector {
 
 	public static NaturalInterface ni = null;
+	public static ArrayList<Agent> agents;
 	
 	public NICollector() {
 		NICollector.ni = new NaturalInterface();
+		agents = new ArrayList<Agent>();
 	}
+	
+	
 }

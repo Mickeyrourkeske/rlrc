@@ -20,9 +20,7 @@ import java.awt.EventQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JFrame;
-
-import org.OpenNI.GeneralException;
+import org.OpenNI.Point3D;
 import org.hs.pforzheim.ti.ni.NICollector;
 
 
@@ -31,21 +29,18 @@ import org.hs.pforzheim.ti.ni.NICollector;
  * @author schrob
  *
  */
-public class Main extends JFrame {
+public class Main {
 	
 	/**
-	 * 
+	 * @param args
 	 */
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * @throws GeneralException 
-	 * 
-	 */
-	public Main() {
+	public static void main(String[] args) {
 		Logger.getLogger("rlrc").log(Level.INFO, "rlrc starting...");
 		
 		new NICollector();
+		
+		NICollector.agents.add(new Agent(new Point3D(0, 0, 2000), 100, "kwrite /home/schrob/knock.sh"));
+		NICollector.agents.add(new Agent(new Point3D(-500, 1000, 4000), 100, "kwrite /home/schrob/knock.sh"));
 		
 		EventQueue.invokeLater(new Runnable() {
 			
@@ -60,16 +55,5 @@ public class Main extends JFrame {
 				}
 			}
 		});
-		
-		
-		
-		
-	}
-	/**
-	 * @param args
-	 * @throws GeneralException 
-	 */
-	public static void main(String[] args) throws GeneralException {
-		new Main();
 	}
 }

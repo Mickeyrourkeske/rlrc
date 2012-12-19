@@ -25,7 +25,7 @@ import java.awt.Insets;
 import javax.swing.JFrame;
 
 
-public class MainPanel extends Thread {
+public class MainPanel {
 
 	private JFrame frame;
 	

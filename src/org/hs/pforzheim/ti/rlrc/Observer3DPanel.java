@@ -33,6 +33,7 @@ import javax.media.opengl.glu.GLU;
 
 import org.OpenNI.Point3D;
 import org.hs.pforzheim.ti.ni.NICollector;
+import org.hs.pforzheim.ti.ni.NaturalInterface;
 
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.FPSAnimator;
@@ -49,20 +50,32 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 	private GLU glu;
 	private Dimension dimension;
 	private int mouseX;
-	private int position = 0;	
+	private int position = 0;
+
+	private NaturalInterface ni;
+	
 	public Observer3DPanel() {
 		super(createGLCapabilities());
 		Logger.getLogger("rlrc").log(Level.INFO, "Starting OpenGL Observer");
+		
 		dimension = new Dimension(640, 480);
-		
 		setSize(dimension);
+		
 		addGLEventListener(this);
+		addMouseMotionListener(new MouseMotionAdapter() { });
+		addMouseListener(new MouseAdapter() { });
 		
-		
+		if(NICollector.ni != null) {
+			this.ni = NICollector.ni;
+		}
+		else {
+			Logger.getLogger("rlrc").log(Level.SEVERE, "No NICollector found. Using default dimensions!");
+		}
 	}
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {GL gl = drawable.getGL();
+		Logger.getLogger("rlrc").log(Level.INFO, "Initializing OpenGL");
 		drawable.setGL(new DebugGL(gl));
 		
         gl.glLoadIdentity();
@@ -88,8 +101,6 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 		
         glu = new GLU();
 
-		addMouseMotionListener(new MouseMotionAdapter() { });
-		addMouseListener(new MouseAdapter() { });
 		
         animator = new FPSAnimator(this, 30);
         animator.start();
@@ -116,20 +127,92 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 			
 			setCamera(gl, glu, 10000);
 			
-			gl.glBegin(GL.GL_POINTS);
 			
-	        Point3D[] points = NICollector.ni.getRealWorldPoints();
-	        if(points != null) {
-	        	for(int i = 0; i < points.length; i++) {
-	        		
-	        		if(points[i] != null) {
-	        			gl.glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
-		        		gl.glVertex3f(-points[i].getX(), points[i].getY(), points[i].getZ());
-	        		}
-	        	}
-	        }
+			if(ni != null) {
+				gl.glBegin(GL.GL_POINTS);
+				gl.glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
+				
+				Point3D[] points = ni.getRealWorldPoints();
+		        if(points != null) {
+		        	for(int i = 0; i < points.length; i++) {
+		        		
+		        		if(points[i] != null) {
+			        		gl.glVertex3f(-points[i].getX(), points[i].getY(), points[i].getZ());			//x turned around
+		        		}
+		        	}
+		        }
+		        gl.glEnd();
+		        
+		        gl.glBegin(GL.GL_QUADS);
+				gl.glColor4f(1.0f, 0.0f, 0.0f, 0.2f);
+		        
+		        for(Agent agent : NICollector.agents) {
+		        	float x = -agent.getPosition().getX();			//x turned around
+		        	float y = agent.getPosition().getY();
+		        	float z = agent.getPosition().getZ();
+		        	float size = agent.getSize() / 2;
+		        	
+		        	/*
+		        	 * Drawing Cube
+		        	 *       ______
+		        	 *      /  T  /|
+		        	 *     1-----4 |
+		        	 *     |     |L|
+		        	 *     |  F  |/
+		        	 *     2-----3
+		        	 */
+		        	
+		        	/* Front */
+		        	gl.glVertex3f(x + size, y - size, z + size);
+		        	gl.glVertex3f(x - size, y - size, z + size);
+		        	gl.glVertex3f(x - size, y + size, z + size);
+		        	gl.glVertex3f(x + size, y + size, z + size);
+		        	
+		        	/* Backside */
+		        	gl.glVertex3f(x + size, y - size, z - size);
+		        	gl.glVertex3f(x - size, y - size, z - size);
+		        	gl.glVertex3f(x - size, y + size, z - size);
+		        	gl.glVertex3f(x + size, y + size, z - size);
+		        	
+		        	/* Rightside */
+		        	gl.glVertex3f(x - size, y - size, z + size);
+		        	gl.glVertex3f(x - size, y - size, z - size);
+		        	gl.glVertex3f(x - size, y + size, z - size);
+		        	gl.glVertex3f(x - size, y + size, z + size);
+		        	
+		        	/* Leftside */
+		        	gl.glVertex3f(x + size, y + size, z + size);
+		        	gl.glVertex3f(x + size, y + size, z - size);
+		        	gl.glVertex3f(x + size, y - size, z - size);
+		        	gl.glVertex3f(x + size, y - size, z + size);
+		        	
+		        	/* Buttom */
+		        	gl.glVertex3f(x - size, y - size, z + size);
+		        	gl.glVertex3f(x - size, y - size, z - size);
+		        	gl.glVertex3f(x + size, y - size, z - size);
+		        	gl.glVertex3f(x + size, y - size, z + size);
+		        	
+		        	/* Top */
+		        	gl.glVertex3f(x - size, y + size, z + size);
+		        	gl.glVertex3f(x - size, y + size, z - size);
+		        	gl.glVertex3f(x + size, y + size, z - size);
+		        	gl.glVertex3f(x + size, y + size, z + size);
+		        }
+
+		        gl.glEnd();
+			}
+			else {
+				gl.glBegin(GL.GL_QUAD_STRIP);
+				
+				gl.glVertex3f(100, 90, 1000);
+				gl.glVertex3f(-100, -110, 1000);
+				gl.glVertex3f(100, 110, 1000);
+				gl.glVertex3f(-100, -90, 1000);
+
+		        gl.glEnd();
+			}
+	        
 			
-	        gl.glEnd();
 		}
 		
 	}
@@ -162,7 +245,6 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
          */
         glu.gluLookAt(0, 0, 0, 0, 0, 500, 0, 1, 0);
 
-        
         gl.glTranslatef(0, 0, 3000);
         gl.glRotated(position, 0, 1, 0);
         gl.glTranslatef(0, 0, -3000);
