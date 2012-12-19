@@ -116,7 +116,6 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 			
 			setCamera(gl, glu, 10000);
 			
-			
 			gl.glBegin(GL.GL_POINTS);
 			
 	        Point3D[] points = NICollector.ni.getRealWorldPoints();
@@ -125,7 +124,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 	        		
 	        		if(points[i] != null) {
 	        			gl.glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
-		        		gl.glVertex3f(points[i].getX(), points[i].getY(), points[i].getZ());
+		        		gl.glVertex3f(-points[i].getX(), points[i].getY(), points[i].getZ());
 	        		}
 	        	}
 	        }
