@@ -27,6 +27,7 @@ import org.OpenNI.Point3D;
  *
  */
 public class Agent {
+	//TODO extends timer, abfragen im timer ob genug punkte aktiv sind?
 	private Point3D position;
 	private float size;
 	private String execString;

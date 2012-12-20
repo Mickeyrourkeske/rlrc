@@ -31,12 +31,13 @@ import org.OpenNI.ImageMetaData;
 import org.OpenNI.MapOutputMode;
 import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
+import org.hs.pforzheim.ti.rlrc.Agent;
 
 /**
  * @author schrob
  *
  */
-public class NaturalInterface {
+public class NaturalInterface extends Thread {
 
 	private Context context;
 	private boolean mirror = false;
@@ -51,6 +52,11 @@ public class NaturalInterface {
 	
 	private DepthGenerator depthGenerator;
 	private ImageGenerator imageGenerator;
+	
+	private volatile boolean running;
+	private int collectInstance = 0;
+	
+	private Point3D[] realPoints = null;
 	/**
 	 * 
 	 * @throws GeneralException
@@ -170,36 +176,75 @@ public class NaturalInterface {
 	}
 	
 	public Point3D[] getRealWorldPoints() {
-		try {
-			context.waitAnyUpdateAll();
-		} catch (StatusException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-//		System.out.println("============================");
-		Point3D[] realPoints = new Point3D[(xRes / FREQ) * (yRes / FREQ)];
-		
-		DepthMap map = depthMetaData.getData();
-		int index = 0;
-		for(int y = FREQ/2; y < yRes; y += FREQ) {
-			for(int x = FREQ/2; x < xRes; x += FREQ) {
-				try {
-					int z = (int)map.readPixel(x, y);
-					Point3D point = depthGenerator.convertProjectiveToRealWorld(new Point3D(x, y, z));
-					realPoints[index] = point;
-					index++;
-					
-//					System.out.println("x: " + x + "->" + point.getX() + "\ty: " + y + "->" + point.getY() + "\tz: " + z + "->" + point.getZ() );
-					
-				} catch (StatusException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		
-		
 		return realPoints;
 	}
+	
+	
+	@Override
+	public void run() {
+		super.run();
+		while(running) {
+			
+			try {
+				context.waitAnyUpdateAll();
+			} catch (StatusException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+//			System.out.println("============================");
+			if(realPoints == null || realPoints.length != (xRes / FREQ) * (yRes / FREQ))
+				realPoints = new Point3D[(xRes / FREQ) * (yRes / FREQ)];
+			
+			DepthMap map = depthMetaData.getData();
+			int index = 0;
+			for(int y = FREQ/2; y < yRes; y += FREQ) {
+				for(int x = FREQ/2; x < xRes; x += FREQ) {
+					try {
+						int z = (int)map.readPixel(x, y);
+						Point3D point = depthGenerator.convertProjectiveToRealWorld(new Point3D(x, y, z));
+						realPoints[index] = point;
+						index++;
+						
+						/* Check if Agents are hit */
+						for(Agent agent : NICollector.agents) {
+							float x1 = agent.getPosition().getX();
+							float y1 = agent.getPosition().getY();
+							float z1 = agent.getPosition().getZ();
+							float size = agent.getSize() / 2;
+							if(point.getX() > (x1 - size)	&& (point.getX() < (x1 + size))
+								&& (point.getY() > (y1 - size)) && (point.getY() < (y1 + size))
+								&& (point.getZ() > (z1 - size)) && (point.getZ() < (z1 + size))) {
+									
+								System.out.println("IN");
+							}
+						}
+						
+//						System.out.println("x: " + x + "->" + point.getX() + "\ty: " + y + "->" + point.getY() + "\tz: " + z + "->" + point.getZ() );
+						
+					} catch (StatusException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			Thread.yield();
+		}
+	}
+	
+	public void startCollectingRealPoints() {
+		collectInstance ++;
+		if(!running) {
+			running = true;
+			this.start();
+		}
+	}
+
+	public void stopCollectingRealPoints() {
+		collectInstance--;
+		if(collectInstance < 1) {
+			running = false;
+		}
+	}
+	
 }

@@ -39,8 +39,10 @@ public class Main {
 		
 		new NICollector();
 		
-		NICollector.agents.add(new Agent(new Point3D(0, 0, 2000), 100, "kwrite /home/schrob/knock.sh"));
-		NICollector.agents.add(new Agent(new Point3D(-500, 1000, 4000), 100, "kwrite /home/schrob/knock.sh"));
+		NICollector.agents.add(new Agent(new Point3D(0, 0, 1000), 100, "kwrite /home/schrob/knock.sh"));
+		//NICollector.agents.add(new Agent(new Point3D(-500, 1000, 4000), 100, "kwrite /home/schrob/knock.sh"));
+		
+		NICollector.ni.startCollectingRealPoints();
 		
 		EventQueue.invokeLater(new Runnable() {
 			

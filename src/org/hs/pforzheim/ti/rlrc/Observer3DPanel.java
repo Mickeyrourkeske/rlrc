@@ -125,7 +125,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 			GL gl = drawable.getGL();
 			gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 			
-			setCamera(gl, glu, 10000);
+			setCamera(gl, glu);
 			
 			
 			if(ni != null) {
@@ -219,7 +219,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 	
 	
 
-	private void setCamera(GL gl, GLU glu, float distance) {
+	private void setCamera(GL gl, GLU glu) {
         // Change to projection matrix.
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
@@ -245,9 +245,10 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
          */
         glu.gluLookAt(0, 0, 0, 0, 0, 500, 0, 1, 0);
 
-        gl.glTranslatef(0, 0, 3000);
+        /* Rotation of Camera */
+        gl.glTranslatef(0, 0, 2000);
         gl.glRotated(position, 0, 1, 0);
-        gl.glTranslatef(0, 0, -3000);
+        gl.glTranslatef(0, 0, -2000);
         
         gl.glMatrixMode(GL.GL_MODELVIEW);
         gl.glLoadIdentity();
