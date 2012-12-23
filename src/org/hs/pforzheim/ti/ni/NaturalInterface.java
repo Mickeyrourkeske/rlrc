@@ -195,6 +195,13 @@ public class NaturalInterface extends Thread {
 			if(realPoints == null || realPoints.length != (xRes / FREQ) * (yRes / FREQ))
 				realPoints = new Point3D[(xRes / FREQ) * (yRes / FREQ)];
 			
+			
+			/* Agents */
+			for(Agent agent : NICollector.agents) {
+				agent.clearHits();
+			}
+			
+			
 			DepthMap map = depthMetaData.getData();
 			int index = 0;
 			for(int y = FREQ/2; y < yRes; y += FREQ) {
@@ -214,8 +221,8 @@ public class NaturalInterface extends Thread {
 							if(point.getX() > (x1 - size)	&& (point.getX() < (x1 + size))
 								&& (point.getY() > (y1 - size)) && (point.getY() < (y1 + size))
 								&& (point.getZ() > (z1 - size)) && (point.getZ() < (z1 + size))) {
-									
-								System.out.println("IN");
+								
+								agent.hit();
 							}
 						}
 						
@@ -233,7 +240,7 @@ public class NaturalInterface extends Thread {
 	}
 	
 	public void startCollectingRealPoints() {
-		collectInstance ++;
+		collectInstance++;
 		if(!running) {
 			running = true;
 			this.start();

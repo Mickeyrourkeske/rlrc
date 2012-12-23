@@ -27,11 +27,14 @@ import org.OpenNI.Point3D;
  *
  */
 public class Agent {
-	//TODO extends timer, abfragen im timer ob genug punkte aktiv sind?
+	private static int THRESHOLD = 50;
+	
 	private Point3D position;
 	private float size;
 	private String execString;
 	private int executions;
+	private int hits;
+	private boolean hit;
 	
 	public Agent(Point3D position, float size, String execString) {
 		this.position = position;
@@ -61,5 +64,26 @@ public class Agent {
 		catch (IOException e) {
 			Logger.getLogger("rlrc").log(Level.WARNING, "Program " + execString + " could not be started! " + e.getMessage());
 		}
+	}
+	
+	public void clearHits() {
+		if(hits < THRESHOLD) {
+			hit = false;						// Allow new program start only if area was cleared before
+		}
+		hits = 0;
+	}
+	
+	public void hit() {
+		hits++;
+		if(hits == THRESHOLD) {
+			if(!hit) {							// Start program only if not started before
+				hit = true;
+				this.exec();
+			}
+		}
+	}
+	
+	public boolean isHit() {
+		return hit;
 	}
 }

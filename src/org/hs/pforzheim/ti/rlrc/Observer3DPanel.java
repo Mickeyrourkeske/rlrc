@@ -144,9 +144,14 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 		        gl.glEnd();
 		        
 		        gl.glBegin(GL.GL_QUADS);
-				gl.glColor4f(1.0f, 0.0f, 0.0f, 0.2f);
 		        
 		        for(Agent agent : NICollector.agents) {
+		        	if(agent.isHit()) {
+		        		gl.glColor4f(1.0f, 0.0f, 0.0f, 0.2f);
+		        	}
+		        	else {
+		        		gl.glColor4f(0.0f, 0.0f, 1.0f, 0.2f);
+		        	}
 		        	float x = -agent.getPosition().getX();			//x turned around
 		        	float y = agent.getPosition().getY();
 		        	float z = agent.getPosition().getZ();
@@ -246,9 +251,9 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
         glu.gluLookAt(0, 0, 0, 0, 0, 500, 0, 1, 0);
 
         /* Rotation of Camera */
-        gl.glTranslatef(0, 0, 2000);
+        gl.glTranslatef(0, 0, 1000);
         gl.glRotated(position, 0, 1, 0);
-        gl.glTranslatef(0, 0, -2000);
+        gl.glTranslatef(0, 0, -1000);
         
         gl.glMatrixMode(GL.GL_MODELVIEW);
         gl.glLoadIdentity();
