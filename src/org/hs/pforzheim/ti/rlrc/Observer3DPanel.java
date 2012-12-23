@@ -102,7 +102,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
         glu = new GLU();
 
 		
-        animator = new FPSAnimator(this, 30);
+        animator = new FPSAnimator(this, 15);
         animator.start();
 	}
 	
@@ -132,7 +132,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 				gl.glBegin(GL.GL_POINTS);
 				gl.glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
 				
-				Point3D[] points = ni.getRealWorldPoints();
+				Point3D[] points = ni.getAndAcquireRealWorldPoints();
 		        if(points != null) {
 		        	for(int i = 0; i < points.length; i++) {
 		        		
@@ -143,6 +143,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 		        }
 		        gl.glEnd();
 		        
+		        ni.realeaseRealWorldPoints();
 		        gl.glBegin(GL.GL_QUADS);
 		        
 		        for(Agent agent : NICollector.agents) {

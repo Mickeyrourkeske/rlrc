@@ -18,6 +18,7 @@ package org.hs.pforzheim.ti.ni;
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,7 +46,7 @@ public class NaturalInterface extends Thread {
 	private static final int xRes = 640;
 	private static final int yRes = 480;
 	private static final int FPS = 30;
-	private static final int FREQ = 4;			// ..., 40, 80, 160 Has to be a factor of xRes and yRes
+	public static final int FREQ = 4;			// ..., 40, 80, 160 Has to be a factor of xRes and yRes
 	
 	private DepthMetaData depthMetaData;
 	private ImageMetaData imageMetaData;
@@ -57,6 +58,9 @@ public class NaturalInterface extends Thread {
 	private int collectInstance = 0;
 	
 	private Point3D[] realPoints = null;
+	
+	private Semaphore lockReal;
+	private Semaphore lockContext;
 	/**
 	 * 
 	 * @throws GeneralException
@@ -90,6 +94,9 @@ public class NaturalInterface extends Thread {
 			
 			context.startGeneratingAll();
 			Logger.getLogger("rlrc").log(Level.INFO, "NI succesfully initialized");
+			
+			lockReal = new Semaphore(1, true);
+			lockContext = new Semaphore(1, true);
 		}
 		catch (GeneralException e) {
 			Logger.getLogger("rlrc").log(Level.SEVERE, "Initializing NI failed! " + e.getMessage());
@@ -99,46 +106,58 @@ public class NaturalInterface extends Thread {
 	}
 	
 	public NIImage depthImage() {
-		byte[] image = new byte[depthMetaData.getFullXRes() * depthMetaData.getFullYRes()];
-		
 		try {
+			lockContext.acquire();
+			
+			byte[] image = new byte[depthMetaData.getFullXRes() * depthMetaData.getFullYRes()];
+			
 			context.waitAnyUpdateAll();
-		} catch (StatusException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			ShortBuffer buffer = depthMetaData.getData().createShortBuffer();
+			
+			lockContext.release();
+			
+			float[] histogram = calcHistogram(buffer);
+			
+			while(buffer.remaining() > 0) {
+				int pos = buffer.position();
+				short pixel = buffer.get();
+				image[pos] = (byte)histogram[pixel];
+			}
+	
+			return new NIImage(image, depthMetaData.getFullXRes(), depthMetaData.getFullYRes());
+			
 		}
-		
-		ShortBuffer buffer = depthMetaData.getData().createShortBuffer();
-		float[] histogram = calcHistogram(buffer);
-		
-		while(buffer.remaining() > 0) {
-			int pos = buffer.position();
-			short pixel = buffer.get();
-			image[pos] = (byte)histogram[pixel];
+		catch(Exception e) {
+			lockContext.release();
+			Logger.getLogger("rlrc").log(Level.SEVERE, "Depthimage failed! " + e.getMessage());
+			return null;
 		}
-
-		return new NIImage(image, depthMetaData.getFullXRes(), depthMetaData.getFullYRes());
 	}
 	
 	public NIImage colorImage() {
-		byte[] image = new byte[imageMetaData.getFullXRes() * imageMetaData.getFullYRes() * 3];
-		
 		try {
+			lockContext.acquire();
+			byte[] image = new byte[imageMetaData.getFullXRes() * imageMetaData.getFullYRes() * 3];
+			
 			context.waitAnyUpdateAll();
-		} catch (StatusException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			ByteBuffer buffer = imageMetaData.getData().createByteBuffer();
+			lockContext.release();
+			while(buffer.remaining() > 0) {
+				int pos = buffer.position();
+				byte pixel = buffer.get();
+				image[pos] = pixel;
+			}
+			
+			return new NIImage(image, imageMetaData.getFullXRes(), imageMetaData.getFullYRes());
+			
 		}
-		
-		ByteBuffer buffer = imageMetaData.getData().createByteBuffer();
-		while(buffer.remaining() > 0) {
-			int pos = buffer.position();
-			byte pixel = buffer.get();
-			image[pos] = pixel;
-
-			//System.out.printf("%#X\n", pixel);
+		catch(Exception e) {
+			lockContext.release();
+			Logger.getLogger("rlrc").log(Level.SEVERE, "Colorimage failed! " + e.getMessage());
+			return null;
 		}
-		return new NIImage(image, imageMetaData.getFullXRes(), imageMetaData.getFullYRes());
 		
 	}
 	
@@ -175,10 +194,19 @@ public class NaturalInterface extends Thread {
 		return histogram;
 	}
 	
-	public Point3D[] getRealWorldPoints() {
-		return realPoints;
+	public Point3D[] getAndAcquireRealWorldPoints() {
+		try {
+			lockReal.acquire();
+			return realPoints;
+		}
+		catch(InterruptedException e) {
+			return null;
+		}
 	}
 	
+	public void realeaseRealWorldPoints() {
+		lockReal.release();
+	}
 	
 	@Override
 	public void run() {
@@ -186,56 +214,63 @@ public class NaturalInterface extends Thread {
 		while(running) {
 			
 			try {
+				lockReal.acquire();
+				lockContext.acquire();
+				
 				context.waitAnyUpdateAll();
-			} catch (StatusException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-//			System.out.println("============================");
-			if(realPoints == null || realPoints.length != (xRes / FREQ) * (yRes / FREQ))
-				realPoints = new Point3D[(xRes / FREQ) * (yRes / FREQ)];
-			
-			
-			/* Agents */
-			for(Agent agent : NICollector.agents) {
-				agent.clearHits();
-			}
-			
-			
-			DepthMap map = depthMetaData.getData();
-			int index = 0;
-			for(int y = FREQ/2; y < yRes; y += FREQ) {
-				for(int x = FREQ/2; x < xRes; x += FREQ) {
-					try {
-						int z = (int)map.readPixel(x, y);
-						Point3D point = depthGenerator.convertProjectiveToRealWorld(new Point3D(x, y, z));
-						realPoints[index] = point;
-						index++;
-						
-						/* Check if Agents are hit */
-						for(Agent agent : NICollector.agents) {
-							float x1 = agent.getPosition().getX();
-							float y1 = agent.getPosition().getY();
-							float z1 = agent.getPosition().getZ();
-							float size = agent.getSize() / 2;
-							if(point.getX() > (x1 - size)	&& (point.getX() < (x1 + size))
-								&& (point.getY() > (y1 - size)) && (point.getY() < (y1 + size))
-								&& (point.getZ() > (z1 - size)) && (point.getZ() < (z1 + size))) {
-								
-								agent.hit();
+				
+				if(realPoints == null || realPoints.length != (xRes / FREQ) * (yRes / FREQ))
+					realPoints = new Point3D[(xRes / FREQ) * (yRes / FREQ)];
+				
+				
+				/* Agents */
+				for(Agent agent : NICollector.agents) {
+					agent.clearHits();
+				}
+				
+				DepthMap map = depthMetaData.getData();
+				int index = 0;
+				for(int y = FREQ/2; y < yRes; y += FREQ) {
+					for(int x = FREQ/2; x < xRes; x += FREQ) {
+						try {
+							int z = (int)map.readPixel(x, y);
+							Point3D point = depthGenerator.convertProjectiveToRealWorld(new Point3D(x, y, z));
+							realPoints[index] = point;
+							index++;
+							
+							/* Check if Agents are hit */
+							for(Agent agent : NICollector.agents) {
+								float x1 = agent.getPosition().getX();
+								float y1 = agent.getPosition().getY();
+								float z1 = agent.getPosition().getZ();
+								float size = agent.getSize() / 2;
+								if(point.getX() > (x1 - size)	&& (point.getX() < (x1 + size))
+									&& (point.getY() > (y1 - size)) && (point.getY() < (y1 + size))
+									&& (point.getZ() > (z1 - size)) && (point.getZ() < (z1 + size))) {
+									
+									agent.hit();
+								}
 							}
+							
 						}
-						
-//						System.out.println("x: " + x + "->" + point.getX() + "\ty: " + y + "->" + point.getY() + "\tz: " + z + "->" + point.getZ() );
-						
-					} catch (StatusException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						catch(StatusException e) {
+							Logger.getLogger("rlrc").log(Level.SEVERE, "Could not convert to real world! " + e.getMessage());
+						}
 					}
 				}
+				lockContext.release();
+				lockReal.release();
+				
+				Thread.sleep(100);
+				
+			}
+			catch (Exception e) {
+				lockContext.release();
+				lockReal.release();
+				Logger.getLogger("rlrc").log(Level.SEVERE, e.getMessage());
 			}
 			
-			Thread.yield();
+			
 		}
 	}
 	
