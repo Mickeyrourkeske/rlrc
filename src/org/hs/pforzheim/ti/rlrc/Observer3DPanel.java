@@ -143,7 +143,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 		        }
 		        gl.glEnd();
 		        
-		        ni.realeaseRealWorldPoints();
+		        ni.releaseRealWorldPoints();
 		        gl.glBegin(GL.GL_QUADS);
 		        
 		        for(Agent agent : NICollector.agents) {

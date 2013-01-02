@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with RLRC.  If not, see <http://www.gnu.org/licenses/>.
+ * along with RLRC. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.hs.pforzheim.ti.ni;
 
@@ -35,10 +35,16 @@ import org.OpenNI.IObserver;
 import org.OpenNI.ImageGenerator;
 import org.OpenNI.ImageMetaData;
 import org.OpenNI.InactiveHandEventArgs;
+import org.OpenNI.License;
 import org.OpenNI.MapOutputMode;
 import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
 import org.hs.pforzheim.ti.rlrc.Agent;
+
+import com.primesense.NITE.NullEventArgs;
+import com.primesense.NITE.PointEventArgs;
+import com.primesense.NITE.SessionManager;
+import com.primesense.NITE.StringPointValueEventArgs;
 
 /**
  * @author schrob
@@ -64,6 +70,8 @@ public class NaturalInterface extends Thread {
 	private GestureGenerator gestureGenerator;
 //	private UserGenerator userGenerator;
 	
+	private SessionManager sessionManager;
+	
 	private volatile boolean running;
 	private int collectInstance = 0;
 	
@@ -82,43 +90,18 @@ public class NaturalInterface extends Thread {
 			
 			//TODO License??? mit xml file? ganz weglassen. so nicht gut
 			
-	//		License license = new License("PrimeSense", "0KOIk2JeIBYClPWVnMoRKn5cdY4=");
-	//		context.addLicense(license);
+			License license = new License("PrimeSense", "0KOIk2JeIBYClPWVnMoRKn5cdY4=");
+			context.addLicense(license);
 			
 			
 			depthGenerator = DepthGenerator.create(context);
 			imageGenerator = ImageGenerator.create(context);
 			handsGenerator = HandsGenerator.create(context);
+//			gestureGenerator = GestureGenerator.create(context);
 //			userGenerator = UserGenerator.create(context);
 			
 			handsGenerator.SetSmoothing(0.1f);						// 0 no smoothing; 1 infinite
-			
-			{
-				handsGenerator.getHandCreateEvent().addObserver(new IObserver<ActiveHandEventArgs>() {
-					
-					@Override
-					public void update(IObservable<ActiveHandEventArgs> observable, ActiveHandEventArgs activeHandEventArgs) {
-						int id = activeHandEventArgs.getId();
-						Point3D point = activeHandEventArgs.getPosition();
-						float time = activeHandEventArgs.getTime();
-						
-						Logger.getLogger("rlrc").log(Level.INFO, "Hand " + id + " located at (" + point.getX() + "|" + point.getY() + "|" + point.getZ() + "), at " + time + "s");
-						
-					}
-				});
-				
-				
-				handsGenerator.getHandDestroyEvent().addObserver(new IObserver<InactiveHandEventArgs>() {
-					
-					@Override
-					public void update(IObservable<InactiveHandEventArgs> observable, InactiveHandEventArgs inactiveHandEventArgs) {
-						int id = inactiveHandEventArgs.getId();
-						float time = inactiveHandEventArgs.getTime();
-						
-						Logger.getLogger("rlrc").log(Level.INFO, "Hand " + id + " destroyed at " + time + "s");
-					}
-				});
-			}
+			initHandEvents(handsGenerator);
 			
 			
 			MapOutputMode mapMode = new MapOutputMode(xRes, yRes, FPS);
@@ -137,6 +120,10 @@ public class NaturalInterface extends Thread {
 			imageMetaData.setFullYRes(yRes);
 			
 			context.startGeneratingAll();
+			
+			sessionManager = new SessionManager(context, "Click","RaiseHand");
+			initSessionEvents(sessionManager);
+			
 			Logger.getLogger("rlrc").log(Level.INFO, "NI succesfully initialized");
 			
 			lockReal = new Semaphore(1, true);
@@ -149,13 +136,71 @@ public class NaturalInterface extends Thread {
 		}
 	}
 	
+	private void initHandEvents(HandsGenerator handsGenerator) throws StatusException {
+		handsGenerator.getHandCreateEvent().addObserver(new IObserver<ActiveHandEventArgs>() {
+			
+			@Override
+			public void update(IObservable<ActiveHandEventArgs> observable, ActiveHandEventArgs args) {
+				int id = args.getId();
+				Point3D point = args.getPosition();
+				float time = args.getTime();
+				
+				Logger.getLogger("rlrc").log(Level.INFO, "Hand " + id + " detected at (" + point.getX() + "|" + point.getY() + "|" + point.getZ() + "), at " + time + "s");
+				
+			}
+		});
+		
+		
+		handsGenerator.getHandDestroyEvent().addObserver(new IObserver<InactiveHandEventArgs>() {
+			
+			@Override
+			public void update(IObservable<InactiveHandEventArgs> observable, InactiveHandEventArgs args) {
+				int id = args.getId();
+				float time = args.getTime();
+				
+				Logger.getLogger("rlrc").log(Level.INFO, "Hand " + id + " destroyed at " + time + "s");
+			}
+		});
+	}
+	
+	private void initSessionEvents(SessionManager sessionManager) throws StatusException {
+		sessionManager.getSessionFocusProgressEvent().addObserver(new IObserver<StringPointValueEventArgs>() {
+			@Override
+			public void update(IObservable<StringPointValueEventArgs> observable, StringPointValueEventArgs args) {
+				Point3D point = args.getPoint();
+				float progress = args.getValue();
+				String name = args.getName();
+				
+				Logger.getLogger("rlrc").log(Level.INFO, "Session " + name + " focused at (" + point.getX() + "|" + point.getY() + "|" + point.getZ() + "), progress " + progress);
+			}
+		});
+		
+		sessionManager.getSessionStartEvent().addObserver(new IObserver<PointEventArgs>() {
+			@Override
+			public void update(IObservable<PointEventArgs> arg0observable, PointEventArgs args) {
+				Point3D point = args.getPoint();
+
+				Logger.getLogger("rlrc").log(Level.INFO, "Session started at (" + point.getX() + "|" + point.getY() + "|" + point.getZ() + ")");
+			}
+		});
+		
+		sessionManager.getSessionEndEvent().addObserver(new IObserver<NullEventArgs>() {
+
+			@Override
+			public void update(IObservable<NullEventArgs> observable, NullEventArgs args) {
+				Logger.getLogger("rlrc").log(Level.INFO, "Session ended");
+			}
+		});
+	}
+	
 	public NIImage depthImage() {
 		try {
 			lockContext.acquire();
 			
 			byte[] image = new byte[depthMetaData.getFullXRes() * depthMetaData.getFullYRes()];
 			
-			context.waitAnyUpdateAll();
+//			context.waitAnyUpdateAll();
+			depthGenerator.waitAndUpdateData();
 			
 			ShortBuffer buffer = depthMetaData.getData().createShortBuffer();
 			
@@ -184,7 +229,8 @@ public class NaturalInterface extends Thread {
 			lockContext.acquire();
 			byte[] image = new byte[imageMetaData.getFullXRes() * imageMetaData.getFullYRes() * 3];
 			
-			context.waitAnyUpdateAll();
+//			context.waitAnyUpdateAll();
+			imageGenerator.waitAndUpdateData();
 			
 			ByteBuffer buffer = imageMetaData.getData().createByteBuffer();
 			lockContext.release();
@@ -248,7 +294,7 @@ public class NaturalInterface extends Thread {
 		}
 	}
 	
-	public void realeaseRealWorldPoints() {
+	public void releaseRealWorldPoints() {
 		lockReal.release();
 	}
 	
@@ -258,10 +304,17 @@ public class NaturalInterface extends Thread {
 		while(running) {
 			
 			try {
+//				handsGenerator.waitAndUpdateData();
+				sessionManager.update(context);
+				
+				
 				lockReal.acquire();
 				lockContext.acquire();
 				
-				context.waitAnyUpdateAll();
+//				context.waitAnyUpdateAll();
+				
+//				context.waitOneUpdateAll(depthGenerator);
+				depthGenerator.waitAndUpdateData();
 				
 				if(realPoints == null || realPoints.length != (xRes / FREQ) * (yRes / FREQ))
 					realPoints = new Point3D[(xRes / FREQ) * (yRes / FREQ)];
