@@ -22,13 +22,19 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.OpenNI.ActiveHandEventArgs;
 import org.OpenNI.Context;
 import org.OpenNI.DepthGenerator;
 import org.OpenNI.DepthMap;
 import org.OpenNI.DepthMetaData;
 import org.OpenNI.GeneralException;
+import org.OpenNI.GestureGenerator;
+import org.OpenNI.HandsGenerator;
+import org.OpenNI.IObservable;
+import org.OpenNI.IObserver;
 import org.OpenNI.ImageGenerator;
 import org.OpenNI.ImageMetaData;
+import org.OpenNI.InactiveHandEventArgs;
 import org.OpenNI.MapOutputMode;
 import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
@@ -50,9 +56,13 @@ public class NaturalInterface extends Thread {
 	
 	private DepthMetaData depthMetaData;
 	private ImageMetaData imageMetaData;
+//	private SceneMetaData sceneMetaData;
 	
 	private DepthGenerator depthGenerator;
 	private ImageGenerator imageGenerator;
+	private HandsGenerator handsGenerator;
+	private GestureGenerator gestureGenerator;
+//	private UserGenerator userGenerator;
 	
 	private volatile boolean running;
 	private int collectInstance = 0;
@@ -78,6 +88,38 @@ public class NaturalInterface extends Thread {
 			
 			depthGenerator = DepthGenerator.create(context);
 			imageGenerator = ImageGenerator.create(context);
+			handsGenerator = HandsGenerator.create(context);
+//			userGenerator = UserGenerator.create(context);
+			
+			handsGenerator.SetSmoothing(0.1f);						// 0 no smoothing; 1 infinite
+			
+			{
+				handsGenerator.getHandCreateEvent().addObserver(new IObserver<ActiveHandEventArgs>() {
+					
+					@Override
+					public void update(IObservable<ActiveHandEventArgs> observable, ActiveHandEventArgs activeHandEventArgs) {
+						int id = activeHandEventArgs.getId();
+						Point3D point = activeHandEventArgs.getPosition();
+						float time = activeHandEventArgs.getTime();
+						
+						Logger.getLogger("rlrc").log(Level.INFO, "Hand " + id + " located at (" + point.getX() + "|" + point.getY() + "|" + point.getZ() + "), at " + time + "s");
+						
+					}
+				});
+				
+				
+				handsGenerator.getHandDestroyEvent().addObserver(new IObserver<InactiveHandEventArgs>() {
+					
+					@Override
+					public void update(IObservable<InactiveHandEventArgs> observable, InactiveHandEventArgs inactiveHandEventArgs) {
+						int id = inactiveHandEventArgs.getId();
+						float time = inactiveHandEventArgs.getTime();
+						
+						Logger.getLogger("rlrc").log(Level.INFO, "Hand " + id + " destroyed at " + time + "s");
+					}
+				});
+			}
+			
 			
 			MapOutputMode mapMode = new MapOutputMode(xRes, yRes, FPS);
 			depthGenerator.setMapOutputMode(mapMode);
@@ -87,6 +129,8 @@ public class NaturalInterface extends Thread {
 			
 			depthMetaData = depthGenerator.getMetaData();
 			imageMetaData = imageGenerator.getMetaData();
+//			sceneMetaData = userGenerator.getUserPixels(0);
+			
 			//TODO generate more maps, scene, sceleton
 			
 			imageMetaData.setFullXRes(xRes);
@@ -288,5 +332,6 @@ public class NaturalInterface extends Thread {
 			running = false;
 		}
 	}
+
 	
 }

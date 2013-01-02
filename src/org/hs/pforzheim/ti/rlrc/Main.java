@@ -40,7 +40,8 @@ public class Main {
 		new NICollector();
 		
 		NICollector.agents.add(new Agent(new Point3D(0, 0, 700), 100, "kwrite /etc/issue"));
-		//NICollector.agents.add(new Agent(new Point3D(-500, 1000, 4000), 100, "kwrite /home/schrob/knock.sh"));
+		NICollector.agents.add(new Agent(new Point3D(50, 100, 1500), 100, "kwrite /etc/issue"));
+		
 		
 		NICollector.ni.startCollectingRealPoints();
 		
