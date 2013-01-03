@@ -18,6 +18,7 @@ package org.hs.pforzheim.ti.ni;
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
+import java.util.Iterator;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +30,7 @@ import org.OpenNI.DepthMap;
 import org.OpenNI.DepthMetaData;
 import org.OpenNI.GeneralException;
 import org.OpenNI.GestureGenerator;
+import org.OpenNI.GestureRecognizedEventArgs;
 import org.OpenNI.HandsGenerator;
 import org.OpenNI.IObservable;
 import org.OpenNI.IObserver;
@@ -37,6 +39,8 @@ import org.OpenNI.ImageMetaData;
 import org.OpenNI.InactiveHandEventArgs;
 import org.OpenNI.License;
 import org.OpenNI.MapOutputMode;
+import org.OpenNI.NodeInfo;
+import org.OpenNI.NodeInfoList;
 import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
 import org.hs.pforzheim.ti.rlrc.Agent;
@@ -50,13 +54,13 @@ import com.primesense.NITE.StringPointValueEventArgs;
  * @author schrob
  *
  */
-public class NaturalInterface extends Thread {
+public class NI extends Thread {
 
 	private Context context;
 	private boolean mirror = false;
 
-	private static final int xRes = 640;
-	private static final int yRes = 480;
+	private static final int xRes = 320;		// 640
+	private static final int yRes = 240;		// 480
 	private static final int FPS = 30;
 	public static final int FREQ = 4;			// ..., 40, 80, 160 Has to be a factor of xRes and yRes
 	
@@ -83,7 +87,7 @@ public class NaturalInterface extends Thread {
 	 * 
 	 * @throws GeneralException
 	 */
-	public NaturalInterface() {
+	public NI() {
 		Logger.getLogger("rlrc").log(Level.INFO, "Initializing NI...");
 		try {
 			context = new Context();
@@ -103,6 +107,13 @@ public class NaturalInterface extends Thread {
 			handsGenerator.SetSmoothing(0.1f);						// 0 no smoothing; 1 infinite
 			initHandEvents(handsGenerator);
 			
+			gestureGenerator = GestureGenerator.create(context);
+			initGestureEvents(gestureGenerator);
+			
+			MapOutputMode[] mapOutputMode = depthGenerator.getSupportedMapOutputModes();
+			for(MapOutputMode mode : mapOutputMode) {
+				System.out.println(mode.getXRes() + " x " + mode.getYRes() + " @ " + mode.getFPS());
+			}
 			
 			MapOutputMode mapMode = new MapOutputMode(xRes, yRes, FPS);
 			depthGenerator.setMapOutputMode(mapMode);
@@ -120,11 +131,20 @@ public class NaturalInterface extends Thread {
 			imageMetaData.setFullYRes(yRes);
 			
 			context.startGeneratingAll();
+			handsGenerator.startGenerating();
+			gestureGenerator.startGenerating();
 			
-			sessionManager = new SessionManager(context, "Click","RaiseHand");
+			sessionManager = new SessionManager(context, "Click","RaiseHand");			// Main focus gesture, quick refocus gesture
 			initSessionEvents(sessionManager);
 			
-			Logger.getLogger("rlrc").log(Level.INFO, "NI succesfully initialized");
+			String log = "NI succesfully initialized";
+			NodeInfoList a = context.enumerateExistingNodes();
+			Iterator<NodeInfo> b = a.iterator();
+			log += "\nExisting Nodes:";
+			while(b.hasNext()) {
+				log += "\n\t" + b.next().getInstanceName();
+			}
+			Logger.getLogger("rlrc").log(Level.INFO, log);
 			
 			lockReal = new Semaphore(1, true);
 			lockContext = new Semaphore(1, true);
@@ -160,6 +180,23 @@ public class NaturalInterface extends Thread {
 				
 				Logger.getLogger("rlrc").log(Level.INFO, "Hand " + id + " destroyed at " + time + "s");
 			}
+		});
+	}
+	
+	private void initGestureEvents(GestureGenerator gestureGenerator) throws StatusException {
+		gestureGenerator.getGestureRecognizedEvent().addObserver(new IObserver<GestureRecognizedEventArgs>() {
+
+			@Override
+			public void update(IObservable<GestureRecognizedEventArgs> observable, GestureRecognizedEventArgs args) {
+				String name = args.getGesture();
+				Point3D pointid = args.getIdPosition();
+				Point3D pointend = args.getEndPosition();
+				
+				Logger.getLogger("rlrc").log(Level.INFO, "Gesture " + name + " started at ("
+								+ pointid.getX() + "|" + pointid.getY() + "|" + pointid.getZ() + " ended at ("
+								+ pointend.getX() + "|" + pointend.getY() + "|" + pointend.getZ() + ")");
+			}
+			
 		});
 	}
 	
@@ -307,11 +344,10 @@ public class NaturalInterface extends Thread {
 //				handsGenerator.waitAndUpdateData();
 				sessionManager.update(context);
 				
-				
 				lockReal.acquire();
 				lockContext.acquire();
 				
-//				context.waitAnyUpdateAll();
+				context.waitAnyUpdateAll();
 				
 //				context.waitOneUpdateAll(depthGenerator);
 				depthGenerator.waitAndUpdateData();
@@ -358,7 +394,7 @@ public class NaturalInterface extends Thread {
 				lockContext.release();
 				lockReal.release();
 				
-				Thread.sleep(100);
+				//Thread.sleep(100);
 				
 			}
 			catch (Exception e) {

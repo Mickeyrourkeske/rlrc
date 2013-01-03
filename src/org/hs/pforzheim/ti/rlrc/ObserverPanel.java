@@ -37,7 +37,7 @@ import javax.swing.Timer;
 
 import org.hs.pforzheim.ti.ni.NICollector;
 import org.hs.pforzheim.ti.ni.NIImage;
-import org.hs.pforzheim.ti.ni.NaturalInterface;
+import org.hs.pforzheim.ti.ni.NI;
 
 /**
  * @author schrob
@@ -47,7 +47,7 @@ public class ObserverPanel extends Component {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private NaturalInterface ni;
+	private NI ni;
 
 	private Dimension dimension;
 	private boolean depth = true;

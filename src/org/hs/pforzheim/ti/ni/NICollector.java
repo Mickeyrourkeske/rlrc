@@ -27,11 +27,11 @@ import org.hs.pforzheim.ti.rlrc.Agent;
  */
 public class NICollector {
 
-	public static NaturalInterface ni = null;
+	public static NI ni = null;
 	public static ArrayList<Agent> agents;
 	
 	public NICollector() {
-		NICollector.ni = new NaturalInterface();
+		NICollector.ni = new NI();
 		agents = new ArrayList<Agent>();
 	}
 	

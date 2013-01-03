@@ -21,14 +21,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.OpenNI.Point3D;
-import org.hs.pforzheim.ti.ni.NaturalInterface;
+import org.hs.pforzheim.ti.ni.NI;
 
 /**
  * @author schrob
  *
  */
 public class Agent {
-	private static final int THRESHOLD = 200 / NaturalInterface.FREQ;
+	private static final int THRESHOLD = 200 / NI.FREQ;
 	
 	private Point3D position;
 	private float size;
