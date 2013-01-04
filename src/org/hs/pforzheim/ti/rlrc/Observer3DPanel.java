@@ -8,11 +8,11 @@
  *
  * RLRC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with RLRC.  If not, see <http://www.gnu.org/licenses/>.
+ * along with RLRC. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.hs.pforzheim.ti.rlrc;
 
@@ -65,15 +65,8 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 		addMouseMotionListener(new MouseMotionAdapter() { });
 		addMouseListener(new MouseAdapter() { });
 		
-		ni = new NI3d();
+		ni = NICollector.getNI3d();
 		ni.startCollectingRealPoints();
-		
-//		if(NICollector.ni != null) {
-//			this.ni = NICollector.ni;
-//		}
-//		else {
-//			Logger.getLogger("rlrc").log(Level.SEVERE, "No NICollector found. Using default dimensions!");
-//		}
 	}
 	
 	@Override

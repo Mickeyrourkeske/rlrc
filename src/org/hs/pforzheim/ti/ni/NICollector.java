@@ -25,14 +25,44 @@ import org.hs.pforzheim.ti.rlrc.Agent;
  * @author schrob
  *
  */
-public class NICollector {
+public final class NICollector {
 
-	public static NI ni = null;
-	public static ArrayList<Agent> agents;
+//	public static NI ni = null;
+	public static ArrayList<Agent> agents = null;
 	
+	private static NIVisual niVisual = null;
+	private static NI3d ni3d = null;
+	private static NITracker niTracker = null;
+	
+
 	public NICollector() {
-		//NICollector.ni = new NI();
-		agents = new ArrayList<Agent>();
+		if(agents == null) {
+			agents = new ArrayList<Agent>();
+		}
+	}
+	
+	public static NIVisual getNIVisual() {
+		if(niVisual == null) {
+			niVisual = new NIVisual();
+		}
+		return niVisual;
+	}
+	
+	public static NI3d getNI3d() {
+		if(ni3d == null) {
+			ni3d = new NI3d();
+		}
+		return ni3d;
+	}
+	
+	public static void startNITracker() {
+		if(niTracker == null) {
+			niTracker = new NITracker();
+		}
+	}
+	
+	public static NITracker getNiTracker() {
+		return niTracker;
 	}
 	
 	

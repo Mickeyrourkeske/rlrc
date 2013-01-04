@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.OpenNI.ActiveHandEventArgs;
+import org.OpenNI.GeneralException;
 import org.OpenNI.GestureGenerator;
 import org.OpenNI.GestureRecognizedEventArgs;
 import org.OpenNI.HandsGenerator;
@@ -33,6 +34,8 @@ import com.primesense.NITE.NullEventArgs;
 import com.primesense.NITE.PointEventArgs;
 import com.primesense.NITE.SessionManager;
 import com.primesense.NITE.StringPointValueEventArgs;
+import com.primesense.NITE.SwipeDetector;
+import com.primesense.NITE.VelocityAngleEventArgs;
 
 public class NITracker extends NI implements Runnable {
 
@@ -46,11 +49,9 @@ public class NITracker extends NI implements Runnable {
 		super();
 		try {
 			Logger.getLogger("rlrc").log(Level.INFO, "Initializing NI Tracker...");
-			handsGenerator = HandsGenerator.create(context);
-			gestureGenerator = GestureGenerator.create(context);
-	//		userGenerator = UserGenerator.create(context);
 			
-			handsGenerator.SetSmoothing(0.1f);						// 0 no smoothing; 1 infinite
+			handsGenerator = HandsGenerator.create(context);
+			handsGenerator.SetSmoothing(0.1f);											// 0 no smoothing; 1 infinite
 			initHandEvents(handsGenerator);
 			
 			gestureGenerator = GestureGenerator.create(context);
@@ -63,14 +64,17 @@ public class NITracker extends NI implements Runnable {
 			initSessionEvents(sessionManager);
 			
 			logNodes();
+			
+			
+			/* Config Gestures */
+			SwipeDetector swipeDetector = swipeDetector();
+			sessionManager.addListener(swipeDetector);
+			
 			t = new Thread(this);
 			t.start();
 		}
 		catch(Exception e) {
-			String log = "Initializing NI failed! " + e.getMessage();
-			log += "\nTerminating!";
-			Logger.getLogger("rlrc").log(Level.SEVERE, log);
-			System.exit(-1);
+			termintate(e);
 		}
 	}
 	
@@ -148,17 +152,34 @@ public class NITracker extends NI implements Runnable {
 		});
 	}
 	
+	private SwipeDetector swipeDetector() {
+		SwipeDetector swipeDetector = null;
+		try {
+			swipeDetector = new SwipeDetector();
+			Logger.getLogger("rlrc").log(Level.INFO, "Swipe min motion time: " + swipeDetector.getMotionTime() + "ms");
+			
+			swipeDetector.getSwipeLeftEvent().addObserver(new IObserver<VelocityAngleEventArgs>() {
+				@Override
+				public void update(IObservable<VelocityAngleEventArgs> observable, VelocityAngleEventArgs args) {
+					Logger.getLogger("rlrc").log(Level.INFO, "Swipe Left");
+				}
+			});
+		}
+		catch(GeneralException e) {
+			Logger.getLogger("rlrc").log(Level.WARNING, "No Swipe Detector! " + e.getMessage());
+		}
+		return swipeDetector;
+	}
 	
 	@Override
 	public void run() {
 		try {
 			while(true) {
-//				handsGenerator.waitAndUpdateData();
-//				handsGenerator.waitAndUpdateData();
-				gestureGenerator.waitAndUpdateData();
+				context.waitAndUpdateAll();
 				sessionManager.update(context);
 			}
-		} catch (StatusException e) {
+		}
+		catch (StatusException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -22,7 +22,6 @@ import java.util.logging.Logger;
 
 import org.OpenNI.Point3D;
 import org.hs.pforzheim.ti.ni.NICollector;
-import org.hs.pforzheim.ti.ni.NITracker;
 
 
 
@@ -37,16 +36,16 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		Logger.getLogger("rlrc").log(Level.INFO, "rlrc starting...");
-		
+
 		new NICollector();
-		
-		new NITracker();
+
+		NICollector.startNITracker();
 		
 		NICollector.agents.add(new Agent(new Point3D(0, 0, 700), 100, "kwrite /etc/issue"));
 		NICollector.agents.add(new Agent(new Point3D(50, 100, 1500), 100, "kwrite /etc/issue"));
 		
 		
-		//NICollector.ni.startCollectingRealPoints();
+		NICollector.getNI3d().startCollectingRealPoints();
 		
 		EventQueue.invokeLater(new Runnable() {
 			

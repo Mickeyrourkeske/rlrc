@@ -27,9 +27,11 @@ import org.OpenNI.DepthMetaData;
 import org.OpenNI.GeneralException;
 import org.OpenNI.ImageGenerator;
 import org.OpenNI.ImageMetaData;
-import org.OpenNI.License;
 import org.OpenNI.NodeInfo;
 import org.OpenNI.NodeInfoList;
+import org.OpenNI.OutArg;
+import org.OpenNI.ScriptNode;
+import org.OpenNI.StatusException;
 
 /**
  * @author schrob
@@ -42,7 +44,7 @@ public class NI {
 
 	public static final int xRes = 640;//320;		// 640
 	public static final int yRes = 480;//240;		// 480
-	protected static final int FPS = 25;
+	protected static final int FPS = 30;
 	public static final int FREQ = 4;			// 1, 2, 4, 8,..., 40, 80, 160 Has to be a factor of xRes and yRes
 	
 	
@@ -54,31 +56,45 @@ public class NI {
 	
 	private static Semaphore lockUpdate = null;;
 	
+	private static volatile int instance = 0;
+
+	private OutArg<ScriptNode> scriptNode;
+	private static final String XML_FILE = "config.xml";
 	/**
 	 * 
 	 * @throws GeneralException
 	 */
 	public NI() {
+		instance++;
 		if(context == null) {
 			Logger.getLogger("rlrc").log(Level.INFO, "Initializing NI...");
 			try {
 				context = new Context();
 				
-				//TODO License??? mit xml file? ganz weglassen. so nicht gut
-				
-				License license = new License("PrimeSense", "0KOIk2JeIBYClPWVnMoRKn5cdY4=");
-				context.addLicense(license);
+				scriptNode = new OutArg<ScriptNode>();
+				context = Context.createFromXmlFile(XML_FILE, scriptNode);
 			}
 			catch (GeneralException e) {
 				String log = "Initializing NI failed! " + e.getMessage();
 				log += "\nTerminating!";
 				Logger.getLogger("rlrc").log(Level.SEVERE, log);
-				System.exit(-1);
+				System.exit(1);
 			}
 		}
 		if(lockUpdate == null) {
 			lockUpdate = new Semaphore(1, true);
 		}
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		instance--;
+		
+		if(instance == 0) {
+			context.stopGeneratingAll();
+			context.release();
+		}
+		super.finalize();
 	}
 	
 	protected static void logNodes() {
@@ -96,15 +112,28 @@ public class NI {
 			Logger.getLogger("rlrc").log(Level.WARNING, "No Nodes: " + e.getMessage());
 		}
 	}
+	
+	protected static void termintate(Exception e) {
+		String log = "Initializing NI failed! " + e.getMessage();
+		log += "\nTerminating!";
+		Logger.getLogger("rlrc").log(Level.SEVERE, log);
+		try {
+			context.stopGeneratingAll();
+		}
+		catch (StatusException se) { }
+		context.release();
+		System.exit(1);
+	}
 
 	/**
 	 * Not needed????
 	 */
 	@Deprecated
-	protected static void updateAllContextData() {
+	protected static void waitUpdateAllContextData() {
 		try {
 			if(lockUpdate.tryAcquire()) {					// if first thread, how tries to update context
-				//context.waitAndUpdateAll();
+				System.out.println("waitandupdate");
+				context.waitAndUpdateAll();
 				lockUpdate.release();
 			}
 //			else {											// else just wait to finish

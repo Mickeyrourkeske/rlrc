@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 import org.OpenNI.DepthGenerator;
 import org.OpenNI.GeneralException;
 import org.OpenNI.ImageGenerator;
-import org.OpenNI.MapOutputMode;
 
 public class NIVisual extends NI 
 {
@@ -33,27 +32,17 @@ public class NIVisual extends NI
 		super();
 		try {
 			Logger.getLogger("rlrc").log(Level.INFO, "Initializing NI Visual...");
-			if(depthGenerator == null)
-				depthGenerator = DepthGenerator.create(context);
+			if(depthGenerator == null) {
+				if(context.getProductionNodeByName("Depth1") != null)
+					depthGenerator = (DepthGenerator) context.getProductionNodeByName("Depth1");
+				else
+					depthGenerator = DepthGenerator.create(context);
+			}
 			if(imageGenerator == null)
 				imageGenerator = ImageGenerator.create(context);
 			
-//			MapOutputMode[] mapOutputMode = depthGenerator.getSupportedMapOutputModes();
-//			for(MapOutputMode mode : mapOutputMode) {
-//				System.out.println(mode.getXRes() + " x " + mode.getYRes() + " @ " + mode.getFPS());
-//			}
-			
-			MapOutputMode mapMode = new MapOutputMode(xRes, yRes, FPS);
-			depthGenerator.setMapOutputMode(mapMode);
-			imageGenerator.setMapOutputMode(mapMode);
-			
-			context.setGlobalMirror(mirror);
-			
 			depthMetaData = depthGenerator.getMetaData();
 			imageMetaData = imageGenerator.getMetaData();
-	
-			imageMetaData.setFullXRes(xRes);
-			imageMetaData.setFullYRes(yRes);
 			
 			if(!depthGenerator.isGenerating())
 				depthGenerator.startGenerating();
@@ -63,17 +52,14 @@ public class NIVisual extends NI
 			logNodes();
 		}
 		catch (GeneralException e) {
-			String log = "Initializing NI failed! " + e.getMessage();
-			log += "\nTerminating!";
-			Logger.getLogger("rlrc").log(Level.SEVERE, log);
-			System.exit(-1);
+			termintate(e);
 		}
 	}
 
 	public NIImage depthImage() {
 		try {
 			byte[] image = new byte[depthMetaData.getFullXRes() * depthMetaData.getFullYRes()];
-			
+
 			ShortBuffer buffer = depthMetaData.getData().createShortBuffer();
 			
 			float[] histogram = calcHistogram(buffer);

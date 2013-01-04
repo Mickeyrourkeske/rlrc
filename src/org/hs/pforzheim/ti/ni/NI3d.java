@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 import org.OpenNI.DepthGenerator;
 import org.OpenNI.DepthMap;
 import org.OpenNI.GeneralException;
-import org.OpenNI.MapOutputMode;
 import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
 import org.hs.pforzheim.ti.rlrc.Agent;
@@ -43,18 +42,12 @@ public class NI3d extends NI implements Runnable {
 		super();
 		try {
 			Logger.getLogger("rlrc").log(Level.INFO, "Initializing NI 3D...");
-			if(depthGenerator == null)
-				depthGenerator = DepthGenerator.create(context);
-			
-//			MapOutputMode[] mapOutputMode = depthGenerator.getSupportedMapOutputModes();
-//			for(MapOutputMode mode : mapOutputMode) {
-//				System.out.println(mode.getXRes() + " x " + mode.getYRes() + " @ " + mode.getFPS());
-//			}
-			
-			MapOutputMode mapMode = new MapOutputMode(xRes, yRes, FPS);
-			depthGenerator.setMapOutputMode(mapMode);
-			
-			context.setGlobalMirror(mirror);
+			if(depthGenerator == null) {
+				if(context.getProductionNodeByName("Depth1") != null)
+					depthGenerator = (DepthGenerator) context.getProductionNodeByName("Depth1");
+				else
+					depthGenerator = DepthGenerator.create(context);
+			}
 			
 			depthMetaData = depthGenerator.getMetaData();
 			
@@ -66,10 +59,8 @@ public class NI3d extends NI implements Runnable {
 			logNodes();
 		}
 		catch (GeneralException e) {
-			String log = "Initializing NI failed! " + e.getMessage();
-			log += "\nTerminating!";
-			Logger.getLogger("rlrc").log(Level.SEVERE, log);
-			System.exit(-1);
+			e.printStackTrace();
+			termintate(e);
 		}
 	}
 
@@ -135,16 +126,15 @@ public class NI3d extends NI implements Runnable {
 						}
 					}
 				}
-//				lockContext.release();
 				lockReal.release();
 				
 				Thread.sleep(100);
 				
 			}
 			catch (Exception e) {
-//				lockContext.release();
 				lockReal.release();
 				Logger.getLogger("rlrc").log(Level.SEVERE, e.getMessage());
+				System.exit(1);
 			}
 			
 			
