@@ -31,7 +31,7 @@ public class NICollector {
 	public static ArrayList<Agent> agents;
 	
 	public NICollector() {
-		NICollector.ni = new NI();
+		//NICollector.ni = new NI();
 		agents = new ArrayList<Agent>();
 	}
 	

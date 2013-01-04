@@ -35,9 +35,9 @@ import java.util.logging.Logger;
 
 import javax.swing.Timer;
 
-import org.hs.pforzheim.ti.ni.NICollector;
-import org.hs.pforzheim.ti.ni.NIImage;
 import org.hs.pforzheim.ti.ni.NI;
+import org.hs.pforzheim.ti.ni.NIImage;
+import org.hs.pforzheim.ti.ni.NIVisual;
 
 /**
  * @author schrob
@@ -47,7 +47,7 @@ public class ObserverPanel extends Component {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private NI ni;
+	private NIVisual ni;
 
 	private Dimension dimension;
 	private boolean depth = true;
@@ -62,18 +62,20 @@ public class ObserverPanel extends Component {
 	
 	public ObserverPanel() {
 		Logger.getLogger("rlrc").log(Level.INFO, "Starting Image Observer");
-		if(NICollector.ni != null) {
-			this.ni = NICollector.ni;
-			NIImage image = ni.depthImage();
-			dimension = new Dimension(image.getWidth(), image.getHeight());
+//		if(NICollector.ni != null) {
+			this.ni = new NIVisual();
+//			NIImage image = ni.depthImage();
+//			dimension = new Dimension(image.getWidth(), image.getHeight());
+			
+			dimension = new Dimension(NI.xRes, NI.yRes);
 			addMouseListener(new MouseAdapter() { });
 			timer.start();
-		}
-		else {
-			Logger.getLogger("rlrc").log(Level.SEVERE, "No NICollector found. Using default dimensions!");
-
-			dimension = new Dimension(640, 480);
-		}
+//		}
+//		else {
+//			Logger.getLogger("rlrc").log(Level.SEVERE, "No NICollector found. Using default dimensions!");
+//
+//			dimension = new Dimension(640, 480);
+//		}
 	}
 
 	@Override

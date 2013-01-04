@@ -32,8 +32,8 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 
 import org.OpenNI.Point3D;
+import org.hs.pforzheim.ti.ni.NI3d;
 import org.hs.pforzheim.ti.ni.NICollector;
-import org.hs.pforzheim.ti.ni.NI;
 
 import com.sun.opengl.util.Animator;
 import com.sun.opengl.util.FPSAnimator;
@@ -52,7 +52,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 	private int mouseX;
 	private int position = 0;
 
-	private NI ni;
+	private NI3d ni;
 	
 	public Observer3DPanel() {
 		super(createGLCapabilities());
@@ -65,12 +65,15 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 		addMouseMotionListener(new MouseMotionAdapter() { });
 		addMouseListener(new MouseAdapter() { });
 		
-		if(NICollector.ni != null) {
-			this.ni = NICollector.ni;
-		}
-		else {
-			Logger.getLogger("rlrc").log(Level.SEVERE, "No NICollector found. Using default dimensions!");
-		}
+		ni = new NI3d();
+		ni.startCollectingRealPoints();
+		
+//		if(NICollector.ni != null) {
+//			this.ni = NICollector.ni;
+//		}
+//		else {
+//			Logger.getLogger("rlrc").log(Level.SEVERE, "No NICollector found. Using default dimensions!");
+//		}
 	}
 	
 	@Override
