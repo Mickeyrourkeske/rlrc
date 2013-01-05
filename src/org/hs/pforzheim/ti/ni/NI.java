@@ -25,6 +25,8 @@ import org.OpenNI.Context;
 import org.OpenNI.DepthGenerator;
 import org.OpenNI.DepthMetaData;
 import org.OpenNI.GeneralException;
+import org.OpenNI.GestureGenerator;
+import org.OpenNI.HandsGenerator;
 import org.OpenNI.ImageGenerator;
 import org.OpenNI.ImageMetaData;
 import org.OpenNI.NodeInfo;
@@ -32,6 +34,7 @@ import org.OpenNI.NodeInfoList;
 import org.OpenNI.OutArg;
 import org.OpenNI.ScriptNode;
 import org.OpenNI.StatusException;
+import org.OpenNI.UserGenerator;
 
 /**
  * @author schrob
@@ -42,17 +45,20 @@ public class NI {
 	protected static Context context = null;;
 	protected static boolean mirror = false;
 
-	public static final int xRes = 640;//320;		// 640
-	public static final int yRes = 480;//240;		// 480
+	public static final int xRes = 640;
+	public static final int yRes = 480;
 	protected static final int FPS = 30;
 	public static final int FREQ = 4;			// 1, 2, 4, 8,..., 40, 80, 160 Has to be a factor of xRes and yRes
 	
+	protected static DepthGenerator depthGenerator = null;
+	protected static ImageGenerator imageGenerator = null;
+	protected static HandsGenerator handsGenerator = null;
+	protected static GestureGenerator gestureGenerator = null;
+	protected static UserGenerator userGenerator = null;
 	
 	protected static DepthMetaData depthMetaData = null;
 	protected static ImageMetaData imageMetaData = null;
 	
-	protected static DepthGenerator depthGenerator = null;
-	protected static ImageGenerator imageGenerator = null;
 	
 	private static Semaphore lockUpdate = null;;
 	

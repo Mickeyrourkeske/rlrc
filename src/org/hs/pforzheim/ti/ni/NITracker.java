@@ -42,8 +42,6 @@ import com.primesense.NITE.SwipeDetector;
 
 public class NITracker extends NI implements Runnable {
 
-	private HandsGenerator handsGenerator;
-	private GestureGenerator gestureGenerator;
 	private SessionManager sessionManager;
 	
 	Thread t;
@@ -56,15 +54,19 @@ public class NITracker extends NI implements Runnable {
 		try {
 			Logger.getLogger("rlrc").log(Level.INFO, "Initializing NI Tracker...");
 			
-			handsGenerator = HandsGenerator.create(context);
+			if(handsGenerator == null)
+				handsGenerator = HandsGenerator.create(context);
 			handsGenerator.SetSmoothing(0.1f);											// 0 no smoothing; 1 infinite
 			initHandEvents(handsGenerator);
 			
-			gestureGenerator = GestureGenerator.create(context);
+			if(gestureGenerator == null)
+				gestureGenerator = GestureGenerator.create(context);
 			initGestureEvents(gestureGenerator);
 			
-			handsGenerator.startGenerating();
-			gestureGenerator.startGenerating();
+			if(!handsGenerator.isGenerating())
+				handsGenerator.startGenerating();
+			if(!gestureGenerator.isGenerating())
+				gestureGenerator.startGenerating();
 			
 			sessionManager = new SessionManager(context, "Click","RaiseHand");			// Main focus gesture, quick refocus gesture
 			initSessionEvents(sessionManager);

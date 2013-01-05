@@ -46,10 +46,10 @@
 
 		<!-- Uncomment nodes from here if you need them.-->
 		<!--<Node type="Audio" />-->
-		<!--<Node type="User" />-->
+		<Node type="User" />
 		<Node type="Hands" />
 		<Node type="Gesture" />
-		<!--<Node type="Scene" />-->
+		<Node type="Scene" />
 		
 	</ProductionNodes>
 </OpenNI>
