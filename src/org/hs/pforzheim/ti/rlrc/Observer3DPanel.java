@@ -25,12 +25,13 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.media.opengl.DebugGL;
-import javax.media.opengl.GL;
+import javax.media.opengl.DebugGL2;
+import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
+import javax.media.opengl.GLProfile;
+import javax.media.opengl.awt.GLJPanel;
 import javax.media.opengl.glu.GLU;
 import javax.media.opengl.glu.GLUquadric;
 
@@ -38,18 +39,23 @@ import org.OpenNI.Point3D;
 import org.hs.pforzheim.ti.ni.NI3d;
 import org.hs.pforzheim.ti.ni.NICollector;
 
-import com.sun.opengl.util.Animator;
-import com.sun.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.FPSAnimator;
+
+//import javax.media.opengl.DebugGL;
+//import javax.media.opengl.GLCanvas;
+
+//import com.sun.opengl.util.Animator;
+//import com.sun.opengl.util.FPSAnimator;
 
 /**
  * @author schrob
  *
  */
-public class Observer3DPanel extends GLCanvas implements GLEventListener {
+public class Observer3DPanel extends GLJPanel implements GLEventListener {
 
 	private static final long serialVersionUID = 1L;
 	
-	private Animator animator;
+	private FPSAnimator animator;
 	private GLU glu;
 	private Dimension dimension;
 	private int mouseX;
@@ -73,32 +79,32 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 	}
 	
 	@Override
-	public void init(GLAutoDrawable drawable) {GL gl = drawable.getGL();
+	public void init(GLAutoDrawable drawable) {
+		GL2 gl = drawable.getGL().getGL2();
 		Logger.getLogger("rlrc").log(Level.INFO, "Initializing OpenGL");
-		drawable.setGL(new DebugGL(gl));
+		drawable.setGL(new DebugGL2(gl));
 		
         gl.glLoadIdentity();
         
-		gl.glEnable(GL.GL_POINT_SPRITE_ARB);
-		gl.glEnable(GL.GL_POINT_SMOOTH);
-		gl.glEnable(GL.GL_VERTEX_PROGRAM_POINT_SIZE);
-		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendEquationSeparate(GL.GL_FUNC_ADD, GL.GL_FUNC_ADD);
-		gl.glBlendFuncSeparate(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA, GL.GL_ONE, GL.GL_ZERO);
+		gl.glEnable(GL2.GL_POINT_SPRITE);
+		gl.glEnable(GL2.GL_POINT_SMOOTH);
+		gl.glEnable(GL2.GL_VERTEX_PROGRAM_POINT_SIZE);
+		gl.glEnable(GL2.GL_BLEND);
+		gl.glBlendEquationSeparate(GL2.GL_FUNC_ADD, GL2.GL_FUNC_ADD);
+		gl.glBlendFuncSeparate(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA, GL2.GL_ONE, GL2.GL_ZERO);
 		
-//		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-		gl.glDisable(GL.GL_DEPTH_TEST);
+		gl.glDisable(GL2.GL_DEPTH_TEST);
 		
 		float[] quadtratic = {500.0f, 0.0f, 0.00005f};					// point size = size * sqrt(1/(a+b*d+c*d^2))  (d = distance from eye)
-		gl.glPointParameterfvARB(GL.GL_POINT_DISTANCE_ATTENUATION_ARB, quadtratic, 0);
+		gl.glPointParameterfv(GL2.GL_POINT_DISTANCE_ATTENUATION, quadtratic, 0);
 		
 		float max = 80.0f;
 		gl.glPointSize(max);
 		
-		gl.glPointParameterfARB(GL.GL_POINT_SIZE_MAX_ARB, max);
-		gl.glPointParameterfARB(GL.GL_POINT_SIZE_MIN_ARB, 1.0f);
+		gl.glPointParameterf(GL2.GL_POINT_SIZE_MAX, max);
+		gl.glPointParameterf(GL2.GL_POINT_SIZE_MIN, 1.0f);
 		
-		gl.glTexEnvf(GL.GL_POINT_SPRITE_ARB, GL.GL_COORD_REPLACE_ARB, GL.GL_TRUE);
+		gl.glTexEnvf(GL2.GL_POINT_SPRITE, GL2.GL_COORD_REPLACE, GL2.GL_TRUE);
 		
 		
         glu = new GLU();
@@ -110,28 +116,21 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 	
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		GL gl = drawable.getGL();
+		GL2 gl = drawable.getGL().getGL2();
 		gl.glViewport(0, 0, width, height);
-	}
-
-	@Override
-	public void displayChanged(GLAutoDrawable drawable, boolean modeChanged, boolean deviceChanged) {
-		// TODO Auto-generated method stub
-		display(drawable);
-		
 	}
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		if(animator.isAnimating()) {
-			GL gl = drawable.getGL();
-			gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+			GL2 gl = drawable.getGL().getGL2();
+			gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 			
 			setCamera(gl, glu);
 			
 			
 			if(ni != null) {
-				gl.glBegin(GL.GL_POINTS);
+				gl.glBegin(GL2.GL_POINTS);
 				gl.glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
 				
 				Point3D[] points = ni.getAndAcquireRealWorldPoints();
@@ -167,7 +166,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 		        }
 		        
 		        /* Print Cubes */
-		        gl.glBegin(GL.GL_QUADS);
+		        gl.glBegin(GL2.GL_QUADS);
 		        
 		        for(CubeAgent agent : NICollector.cubeAgents) {
 		        	if(agent.isHit()) {
@@ -231,7 +230,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 		        gl.glEnd();
 			}
 			else {
-				gl.glBegin(GL.GL_QUAD_STRIP);
+				gl.glBegin(GL2.GL_QUAD_STRIP);
 				
 				gl.glVertex3f(100, 90, 1000);
 				gl.glVertex3f(-100, -110, 1000);
@@ -248,9 +247,9 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 	
 	
 
-	private void setCamera(GL gl, GLU glu) {
+	private void setCamera(GL2 gl, GLU glu) {
         // Change to projection matrix.
-        gl.glMatrixMode(GL.GL_PROJECTION);
+        gl.glMatrixMode(GL2.GL_PROJECTION);
         gl.glLoadIdentity();
         
         /*
@@ -279,13 +278,13 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
         gl.glRotated(position, 0, 1, 0);
         gl.glTranslatef(0, 0, -1000);
         
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
        
     }
 
 	private static GLCapabilities createGLCapabilities() {
-        GLCapabilities capabilities = new GLCapabilities();
+        GLCapabilities capabilities = new GLCapabilities(GLProfile.get(GLProfile.GL2));
         capabilities.setRedBits(8);
         capabilities.setBlueBits(8);
         capabilities.setGreenBits(8);
@@ -313,6 +312,12 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 		if(e.getID() == MouseEvent.MOUSE_PRESSED) {
 			mouseX = e.getX();
 		}
+	}
+
+	@Override
+	public void dispose(GLAutoDrawable arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	

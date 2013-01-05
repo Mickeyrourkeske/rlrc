@@ -5,11 +5,10 @@ RLRC
 Installation
 ==
 
-Download the OpenNI Binaries, OpenNI Compliant Hardware Binaries and OpenNI Compliant Middleware Binaries from http://www.openni.org/Downloads/OpenNIModules.aspx for your system.
-Extract them and install them as root in the same order.
+Download the OpenNI Binaries, OpenNI Compliant Hardware Binaries and OpenNI Compliant Middleware Binaries from http://www.openni.org/openni-sdk/openni-sdk-history-2/ for your system.
+Extract them and install them as root.
+OpenNI 2 is currently not tested.
 
-Install javacv and jogl from your repository
+For building the project you also need to install JOGL 2 https://jogamp.org/jogl
 
-
-Run rlrc.jar
 

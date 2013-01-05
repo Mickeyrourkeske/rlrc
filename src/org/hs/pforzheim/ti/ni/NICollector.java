@@ -90,7 +90,6 @@ public final class NICollector {
 			
 			for(int i = 0; i < cubeAgentList.getLength(); i++) {
 				Node node = cubeAgentList.item(i);
-				System.out.println(i);
 				
 				if(node.getNodeType() == Node.ELEMENT_NODE) {
 					Element element = (Element)node;

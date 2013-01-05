@@ -21,7 +21,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hs.pforzheim.ti.ni.NICollector;
-import org.hs.pforzheim.ti.ni.NISkeleton;
 
 
 
@@ -39,7 +38,7 @@ public class Main {
 
 		new NICollector();
 
-		new NISkeleton();
+//		new NISkeleton();
 		
 		NICollector.startNITracker();
 		
