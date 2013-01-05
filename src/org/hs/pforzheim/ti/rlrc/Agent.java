@@ -43,7 +43,7 @@ public class Agent {
 	public void exec() {
 		executions++;
 		try {
-			Logger.getLogger("rlrc").log(Level.INFO, logInfo + execString + " starting... ");
+			Logger.getLogger("rlrc").log(Level.INFO, logInfo + execString + " (" + executions +") starting... ");
 			Runtime.getRuntime().exec(execString);
 		}
 		catch (IOException e) {

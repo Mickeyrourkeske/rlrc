@@ -20,7 +20,6 @@ import java.awt.EventQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.OpenNI.Point3D;
 import org.hs.pforzheim.ti.ni.NICollector;
 
 
@@ -41,10 +40,7 @@ public class Main {
 
 		NICollector.startNITracker();
 		
-		NICollector.cubeAgents.add(new CubeAgent(new Point3D(0, 0, 500), 100, "kwrite /etc/issue"));
-		NICollector.cubeAgents.add(new CubeAgent(new Point3D(50, 100, 2500), 100, "kwrite /etc/issue"));
-		
-		NICollector.gestureAgents.add(new GestureAgent(GestureAgent.SWIPE_LEFT, "kwrite /etc/issue"));
+		NICollector.readAgentsFromXML("agents.xml");
 		
 		NICollector.getNI3d().startCollectingRealPoints();
 		

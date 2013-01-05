@@ -1,0 +1,20 @@
+<Agent>
+	<CubeAgent>
+		<x>0.0</x>
+		<y>0.0</y>
+		<z>500.0</z>
+		<size>100.0</size>
+		<execString>kwrite /etc/issue</execString>
+	</CubeAgent>
+	<CubeAgent>
+		<x>50.0</x>
+		<y>100.0</y>
+		<z>2500.0</z>
+		<size>100.0</size>
+		<execString>kwrite /etc/issue</execString>
+	</CubeAgent>
+	<GestureAgent>
+		<gesture>SWIPE_LEFT</gesture>
+		<execString>kwrite /etc/issue</execString>
+	</GestureAgent>
+</Agent>

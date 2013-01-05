@@ -16,10 +16,19 @@
  */
 package org.hs.pforzheim.ti.ni;
 
+import java.io.File;
 import java.util.ArrayList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.OpenNI.Point3D;
 import org.hs.pforzheim.ti.rlrc.CubeAgent;
 import org.hs.pforzheim.ti.rlrc.GestureAgent;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 /**
@@ -69,6 +78,53 @@ public final class NICollector {
 	public static NITracker getNiTracker() {
 		return niTracker;
 	}
+
+	public static void readAgentsFromXML(String xml) {
+		try {
+			File xmlFile = new File(xml);
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document document = builder.parse(xmlFile);
+			
+			NodeList cubeAgentList = document.getElementsByTagName("CubeAgent");
+			
+			for(int i = 0; i < cubeAgentList.getLength(); i++) {
+				Node node = cubeAgentList.item(i);
+				System.out.println(i);
+				
+				if(node.getNodeType() == Node.ELEMENT_NODE) {
+					Element element = (Element)node;
+					float x = new Float(getValue("x", element));
+					float y = new Float(getValue("y", element));
+					float z = new Float(getValue("z", element));
+					float size = new Float(getValue("size", element));
+					String execString = getValue("execString", element);
+					cubeAgents.add(new CubeAgent(new Point3D(x, y, z), size, execString));
+				}
+			}
+			
+			
+			NodeList gestureAgentList = document.getElementsByTagName("GestureAgent");
+			
+			for(int i = 0; i < gestureAgentList.getLength(); i++) {
+				Node node = gestureAgentList.item(i);
+				
+				if(node.getNodeType() == Node.ELEMENT_NODE) {
+					Element element = (Element)node;
+					String gesture = getValue("gesture", element);
+					String execString = getValue("execString", element);
+					gestureAgents.add(new GestureAgent(gesture, execString));
+				}
+			}
+		}
+		catch(Exception e) {
+			
+		}
+		
+	}
 	
+	private static String getValue(String tag, Element element) {
+		return element.getElementsByTagName(tag).item(0).getChildNodes().item(0).getNodeValue();
+	}
 	
 }
