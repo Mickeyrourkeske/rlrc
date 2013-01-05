@@ -29,13 +29,14 @@ import org.OpenNI.IObserver;
 import org.OpenNI.InactiveHandEventArgs;
 import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
+import org.hs.pforzheim.ti.rlrc.GestureAgent;
 
+import com.primesense.NITE.DirectionVelocityAngleEventArgs;
 import com.primesense.NITE.NullEventArgs;
 import com.primesense.NITE.PointEventArgs;
 import com.primesense.NITE.SessionManager;
 import com.primesense.NITE.StringPointValueEventArgs;
 import com.primesense.NITE.SwipeDetector;
-import com.primesense.NITE.VelocityAngleEventArgs;
 
 public class NITracker extends NI implements Runnable {
 
@@ -67,8 +68,9 @@ public class NITracker extends NI implements Runnable {
 			
 			
 			/* Config Gestures */
-			SwipeDetector swipeDetector = swipeDetector();
-			sessionManager.addListener(swipeDetector);
+			sessionManager.addListener(swipeDetector());
+			
+//			sessionManager.addListener(circleDetector());
 			
 			t = new Thread(this);
 			t.start();
@@ -158,10 +160,15 @@ public class NITracker extends NI implements Runnable {
 			swipeDetector = new SwipeDetector();
 			Logger.getLogger("rlrc").log(Level.INFO, "Swipe min motion time: " + swipeDetector.getMotionTime() + "ms");
 			
-			swipeDetector.getSwipeLeftEvent().addObserver(new IObserver<VelocityAngleEventArgs>() {
+			swipeDetector.getGeneralSwipeEvent().addObserver(new IObserver<DirectionVelocityAngleEventArgs>() {
 				@Override
-				public void update(IObservable<VelocityAngleEventArgs> observable, VelocityAngleEventArgs args) {
-					Logger.getLogger("rlrc").log(Level.INFO, "Swipe Left");
+				public void update(IObservable<DirectionVelocityAngleEventArgs> obeservable, DirectionVelocityAngleEventArgs args) {
+					for(GestureAgent agent : NICollector.gestureAgents) {
+						String gesture = GestureAgent.SWIPE + args.getDirection();
+						if(agent.getGesture().equals(gesture)) {
+							agent.exec();
+						}
+					}
 				}
 			});
 		}
@@ -171,11 +178,31 @@ public class NITracker extends NI implements Runnable {
 		return swipeDetector;
 	}
 	
+	// TODO get direction out of points
+//	private CircleDetector circleDetector() {
+//		CircleDetector circleDetector = null;
+//		try {
+//			circleDetector = new CircleDetector();
+//			
+//			circleDetector.getCircleEvent().addObserver(new IObserver<CircleEventArgs>() {
+//				@Override
+//				public void update(IObservable<CircleEventArgs> obeservable, CircleEventArgs args) {
+//					Circle circle = args.getCircle();
+//					System.out.println(circle.getRadius());
+//				}
+//			});
+//		}
+//		catch(GeneralException e) {
+//			Logger.getLogger("rlrc").log(Level.WARNING, "No Circle Detector! " + e.getMessage());	
+//		}
+//		return circleDetector;
+//	}
+	
 	@Override
 	public void run() {
 		try {
 			while(true) {
-				context.waitAndUpdateAll();
+				context.waitOneUpdateAll(gestureGenerator);
 				sessionManager.update(context);
 			}
 		}

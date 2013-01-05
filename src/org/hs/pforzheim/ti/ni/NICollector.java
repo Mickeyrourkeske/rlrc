@@ -18,7 +18,8 @@ package org.hs.pforzheim.ti.ni;
 
 import java.util.ArrayList;
 
-import org.hs.pforzheim.ti.rlrc.Agent;
+import org.hs.pforzheim.ti.rlrc.CubeAgent;
+import org.hs.pforzheim.ti.rlrc.GestureAgent;
 
 
 /**
@@ -28,7 +29,8 @@ import org.hs.pforzheim.ti.rlrc.Agent;
 public final class NICollector {
 
 //	public static NI ni = null;
-	public static ArrayList<Agent> agents = null;
+	public static ArrayList<CubeAgent> cubeAgents = null;
+	public static ArrayList<GestureAgent> gestureAgents = null;
 	
 	private static NIVisual niVisual = null;
 	private static NI3d ni3d = null;
@@ -36,8 +38,11 @@ public final class NICollector {
 	
 
 	public NICollector() {
-		if(agents == null) {
-			agents = new ArrayList<Agent>();
+		if(cubeAgents == null) {
+			cubeAgents = new ArrayList<CubeAgent>();
+		}
+		if(gestureAgents == null) {
+			gestureAgents = new ArrayList<GestureAgent>();
 		}
 	}
 	

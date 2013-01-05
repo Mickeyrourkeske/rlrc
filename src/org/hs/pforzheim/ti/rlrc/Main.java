@@ -41,9 +41,10 @@ public class Main {
 
 		NICollector.startNITracker();
 		
-		NICollector.agents.add(new Agent(new Point3D(0, 0, 700), 100, "kwrite /etc/issue"));
-		NICollector.agents.add(new Agent(new Point3D(50, 100, 1500), 100, "kwrite /etc/issue"));
+		NICollector.cubeAgents.add(new CubeAgent(new Point3D(0, 0, 500), 100, "kwrite /etc/issue"));
+		NICollector.cubeAgents.add(new CubeAgent(new Point3D(50, 100, 2500), 100, "kwrite /etc/issue"));
 		
+		NICollector.gestureAgents.add(new GestureAgent(GestureAgent.SWIPE_LEFT, "kwrite /etc/issue"));
 		
 		NICollector.getNI3d().startCollectingRealPoints();
 		

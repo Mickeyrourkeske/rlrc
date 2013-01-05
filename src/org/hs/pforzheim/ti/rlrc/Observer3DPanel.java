@@ -142,7 +142,7 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 		        ni.releaseRealWorldPoints();
 		        gl.glBegin(GL.GL_QUADS);
 		        
-		        for(Agent agent : NICollector.agents) {
+		        for(CubeAgent agent : NICollector.cubeAgents) {
 		        	if(agent.isHit()) {
 		        		gl.glColor4f(1.0f, 0.0f, 0.0f, 0.2f);
 		        	}
