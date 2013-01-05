@@ -127,4 +127,5 @@ public final class NICollector {
 		return element.getElementsByTagName(tag).item(0).getChildNodes().item(0).getNodeValue();
 	}
 	
+	//TODO public static void writeAgentsToXML(String xml)
 }

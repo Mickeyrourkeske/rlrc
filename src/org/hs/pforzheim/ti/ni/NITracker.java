@@ -16,6 +16,8 @@
  */
 package org.hs.pforzheim.ti.ni;
 
+import java.util.HashMap;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,6 +47,9 @@ public class NITracker extends NI implements Runnable {
 	private SessionManager sessionManager;
 	
 	Thread t;
+	
+	private HashMap<Integer, Point3D> hands;
+	private Semaphore lockHand;
 
 	public NITracker() {
 		super();
@@ -63,6 +68,9 @@ public class NITracker extends NI implements Runnable {
 			
 			sessionManager = new SessionManager(context, "Click","RaiseHand");			// Main focus gesture, quick refocus gesture
 			initSessionEvents(sessionManager);
+			
+			hands = new HashMap<Integer, Point3D>();
+			lockHand = new Semaphore(1, true);
 			
 			logNodes();
 			
@@ -85,24 +93,29 @@ public class NITracker extends NI implements Runnable {
 			
 			@Override
 			public void update(IObservable<ActiveHandEventArgs> observable, ActiveHandEventArgs args) {
-				int id = args.getId();
-				Point3D point = args.getPosition();
-				float time = args.getTime();
-				
-				Logger.getLogger("rlrc").log(Level.INFO, "Hand " + id + " detected at (" + point.getX() + "|" + point.getY() + "|" + point.getZ() + "), at " + time + "s");
-				
+				lockHand.acquireUninterruptibly();
+				hands.put(args.getId(), args.getPosition());
+				lockHand.release();
 			}
 		});
-		
 		
 		handsGenerator.getHandDestroyEvent().addObserver(new IObserver<InactiveHandEventArgs>() {
 			
 			@Override
 			public void update(IObservable<InactiveHandEventArgs> observable, InactiveHandEventArgs args) {
-				int id = args.getId();
-				float time = args.getTime();
-				
-				Logger.getLogger("rlrc").log(Level.INFO, "Hand " + id + " destroyed at " + time + "s");
+				lockHand.acquireUninterruptibly();
+				hands.remove(args.getId());
+				lockHand.release();
+			}
+		});
+		
+		handsGenerator.getHandUpdateEvent().addObserver(new IObserver<ActiveHandEventArgs>() {
+			
+			@Override
+			public void update(IObservable<ActiveHandEventArgs> observable, ActiveHandEventArgs args) {
+				lockHand.acquireUninterruptibly();
+				hands.put(args.getId(), args.getPosition());
+				lockHand.release();
 			}
 		});
 	}
@@ -140,6 +153,7 @@ public class NITracker extends NI implements Runnable {
 			@Override
 			public void update(IObservable<PointEventArgs> arg0observable, PointEventArgs args) {
 				Point3D point = args.getPoint();
+				
 
 				Logger.getLogger("rlrc").log(Level.INFO, "Session started at (" + point.getX() + "|" + point.getY() + "|" + point.getZ() + ")");
 			}
@@ -164,6 +178,7 @@ public class NITracker extends NI implements Runnable {
 				@Override
 				public void update(IObservable<DirectionVelocityAngleEventArgs> obeservable, DirectionVelocityAngleEventArgs args) {
 					for(GestureAgent agent : NICollector.gestureAgents) {
+						Logger.getLogger("rlrc").log(Level.INFO, args.getDirection() + ": v=" + args.getVelocity() + "m/s");
 						String gesture = GestureAgent.SWIPE + args.getDirection();
 						if(agent.getGesture().equals(gesture)) {
 							agent.exec();
@@ -210,5 +225,14 @@ public class NITracker extends NI implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public HashMap<Integer, Point3D> getAndAcquireHands() {
+		lockHand.acquireUninterruptibly();
+		return hands;
+	}
+	
+	public void releaseHands() {
+		lockHand.release();
 	}
 }

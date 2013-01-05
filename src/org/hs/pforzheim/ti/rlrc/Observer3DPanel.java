@@ -20,6 +20,8 @@ import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +32,7 @@ import javax.media.opengl.GLCanvas;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
+import javax.media.opengl.glu.GLUquadric;
 
 import org.OpenNI.Point3D;
 import org.hs.pforzheim.ti.ni.NI3d;
@@ -80,7 +83,10 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 		gl.glEnable(GL.GL_POINT_SMOOTH);
 		gl.glEnable(GL.GL_VERTEX_PROGRAM_POINT_SIZE);
 		gl.glEnable(GL.GL_BLEND);
-		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glBlendEquationSeparate(GL.GL_FUNC_ADD, GL.GL_FUNC_ADD);
+		gl.glBlendFuncSeparate(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA, GL.GL_ONE, GL.GL_ZERO);
+		
+//		gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glDisable(GL.GL_DEPTH_TEST);
 		
 		float[] quadtratic = {500.0f, 0.0f, 0.00005f};					// point size = size * sqrt(1/(a+b*d+c*d^2))  (d = distance from eye)
@@ -140,6 +146,27 @@ public class Observer3DPanel extends GLCanvas implements GLEventListener {
 		        gl.glEnd();
 		        
 		        ni.releaseRealWorldPoints();
+		        
+		        /* Print Hands */
+		        if(NICollector.getNiTracker() != null) {
+			        HashMap<Integer, Point3D> hands = NICollector.getNiTracker().getAndAcquireHands();
+			        Set<Integer> set = hands.keySet();
+			        for(Integer id : set) {
+			        	Point3D point = hands.get(id);
+			        	
+			        	gl.glTranslatef(-point.getX(), point.getY(), point.getZ());
+			        	gl.glColor3f(1, 0, 0);
+			        	GLUquadric hand = glu.gluNewQuadric();
+			        	glu.gluQuadricDrawStyle(hand, GLU.GLU_FILL);
+			        	glu.gluQuadricNormals(hand, GLU.GLU_FLAT);
+			        	glu.gluQuadricOrientation(hand, GLU.GLU_OUTSIDE);
+			        	glu.gluSphere(hand, 10, 20, 20);
+			        	gl.glTranslatef(point.getX(), -point.getY(), -point.getZ());
+			        }
+			        NICollector.getNiTracker().releaseHands();
+		        }
+		        
+		        /* Print Cubes */
 		        gl.glBegin(GL.GL_QUADS);
 		        
 		        for(CubeAgent agent : NICollector.cubeAgents) {
