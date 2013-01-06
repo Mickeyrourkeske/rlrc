@@ -26,7 +26,7 @@ import javax.swing.JFrame;
 
 
 public class MainPanel {
-
+	
 	private JFrame frame;
 	
 	public JFrame getFrame() {

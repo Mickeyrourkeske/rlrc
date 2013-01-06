@@ -17,7 +17,6 @@
 package org.hs.pforzheim.ti.ni;
 
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.OpenNI.DepthGenerator;
@@ -28,6 +27,8 @@ import org.OpenNI.StatusException;
 import org.hs.pforzheim.ti.rlrc.CubeAgent;
 
 public class NI3d extends NI implements Runnable {
+
+	private static final Logger LOGGER = Logger.getLogger(NI3d.class.getName());
 	
 	private volatile boolean running;
 	private int collectInstance = 0;
@@ -41,7 +42,7 @@ public class NI3d extends NI implements Runnable {
 	public NI3d() {
 		super();
 		try {
-			Logger.getLogger("rlrc").log(Level.INFO, "Initializing NI 3D...");
+			LOGGER.info("Initializing NI 3D...");
 			if(depthGenerator == null) {
 				if(context.getProductionNodeByName("Depth1") != null)
 					depthGenerator = (DepthGenerator) context.getProductionNodeByName("Depth1");
@@ -122,7 +123,7 @@ public class NI3d extends NI implements Runnable {
 							
 						}
 						catch(StatusException e) {
-							Logger.getLogger("rlrc").log(Level.SEVERE, "Could not convert to real world! " + e.getMessage());
+							LOGGER.severe("Could not convert to real world! " + e.getMessage());
 						}
 					}
 				}
@@ -133,7 +134,7 @@ public class NI3d extends NI implements Runnable {
 			}
 			catch (Exception e) {
 				lockReal.release();
-				Logger.getLogger("rlrc").log(Level.SEVERE, e.getMessage());
+				LOGGER.severe(e.getMessage());
 				System.exit(1);
 			}
 			

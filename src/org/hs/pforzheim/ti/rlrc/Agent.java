@@ -17,7 +17,6 @@
 package org.hs.pforzheim.ti.rlrc;
 
 import java.io.IOException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -26,6 +25,8 @@ import java.util.logging.Logger;
  */
 public class Agent {
 
+	protected static final Logger LOGGER = Logger.getLogger(Agent.class.getName());
+	
 	protected String logInfo;
 	protected String execString;
 	protected int executions;
@@ -43,11 +44,11 @@ public class Agent {
 	public void exec() {
 		executions++;
 		try {
-			Logger.getLogger("rlrc").log(Level.INFO, logInfo + execString + " (" + executions + ") starting... ");
+			LOGGER.info(logInfo + execString + " (" + executions + ") starting... ");
 			Runtime.getRuntime().exec(execString);
 		}
 		catch (IOException e) {
-			Logger.getLogger("rlrc").log(Level.WARNING, "Program " + execString + " could not be started! " + e.getMessage());
+			LOGGER.warning("Program " + execString + " could not be started! " + e.getMessage());
 		}
 	}
 }

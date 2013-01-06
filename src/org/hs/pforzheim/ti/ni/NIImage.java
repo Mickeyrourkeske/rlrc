@@ -16,12 +16,13 @@
  */
 package org.hs.pforzheim.ti.ni;
 
+
 /**
  * @author schrob
  *
  */
 public class NIImage {
-
+	
 	private byte[] image;
 	private int width;
 	private int height;

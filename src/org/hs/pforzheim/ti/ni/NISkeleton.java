@@ -30,7 +30,7 @@ import org.OpenNI.UserGenerator;
  *
  */
 public class NISkeleton extends NI implements Runnable {
-
+	
 	private PoseDetectionCapability poseDetectionCapability;
 	private SkeletonCapability skeletonCapability;
 	private String calibrationPose;

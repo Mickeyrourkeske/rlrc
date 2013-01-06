@@ -18,8 +18,6 @@ package org.hs.pforzheim.ti.ni;
 
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.OpenNI.ActiveHandEventArgs;
 import org.OpenNI.GeneralException;
@@ -41,7 +39,7 @@ import com.primesense.NITE.StringPointValueEventArgs;
 import com.primesense.NITE.SwipeDetector;
 
 public class NITracker extends NI implements Runnable {
-
+	
 	private SessionManager sessionManager;
 	
 	Thread t;
@@ -52,7 +50,7 @@ public class NITracker extends NI implements Runnable {
 	public NITracker() {
 		super();
 		try {
-			Logger.getLogger("rlrc").log(Level.INFO, "Initializing NI Tracker...");
+			LOGGER.info("Initializing NI Tracker...");
 			
 			if(handsGenerator == null)
 				handsGenerator = HandsGenerator.create(context);
@@ -131,9 +129,9 @@ public class NITracker extends NI implements Runnable {
 				Point3D pointid = args.getIdPosition();
 				Point3D pointend = args.getEndPosition();
 				
-				Logger.getLogger("rlrc").log(Level.INFO, "Gesture " + name + " started at ("
-								+ pointid.getX() + "|" + pointid.getY() + "|" + pointid.getZ() + " ended at ("
-								+ pointend.getX() + "|" + pointend.getY() + "|" + pointend.getZ() + ")");
+				LOGGER.info("Gesture " + name + " started at ("
+							+ pointid.getX() + "|" + pointid.getY() + "|" + pointid.getZ() + " ended at ("
+							+ pointend.getX() + "|" + pointend.getY() + "|" + pointend.getZ() + ")");
 			}
 			
 		});
@@ -147,7 +145,7 @@ public class NITracker extends NI implements Runnable {
 				float progress = args.getValue();
 				String name = args.getName();
 				
-				Logger.getLogger("rlrc").log(Level.INFO, "Session " + name + " focused at (" + point.getX() + "|" + point.getY() + "|" + point.getZ() + "), progress " + progress);
+				LOGGER.info("Session " + name + " focused at (" + point.getX() + "|" + point.getY() + "|" + point.getZ() + "), progress " + progress);
 			}
 		});
 		
@@ -156,8 +154,7 @@ public class NITracker extends NI implements Runnable {
 			public void update(IObservable<PointEventArgs> arg0observable, PointEventArgs args) {
 				Point3D point = args.getPoint();
 				
-
-				Logger.getLogger("rlrc").log(Level.INFO, "Session started at (" + point.getX() + "|" + point.getY() + "|" + point.getZ() + ")");
+				LOGGER.info("Session started at (" + point.getX() + "|" + point.getY() + "|" + point.getZ() + ")");
 			}
 		});
 		
@@ -165,7 +162,7 @@ public class NITracker extends NI implements Runnable {
 
 			@Override
 			public void update(IObservable<NullEventArgs> observable, NullEventArgs args) {
-				Logger.getLogger("rlrc").log(Level.INFO, "Session ended");
+				LOGGER.info("Session ended");
 			}
 		});
 	}
@@ -174,13 +171,13 @@ public class NITracker extends NI implements Runnable {
 		SwipeDetector swipeDetector = null;
 		try {
 			swipeDetector = new SwipeDetector();
-			Logger.getLogger("rlrc").log(Level.INFO, "Swipe min motion time: " + swipeDetector.getMotionTime() + "ms");
+			LOGGER.info("Swipe min motion time: " + swipeDetector.getMotionTime() + "ms");
 			
 			swipeDetector.getGeneralSwipeEvent().addObserver(new IObserver<DirectionVelocityAngleEventArgs>() {
 				@Override
 				public void update(IObservable<DirectionVelocityAngleEventArgs> obeservable, DirectionVelocityAngleEventArgs args) {
 					for(GestureAgent agent : NICollector.gestureAgents) {
-						Logger.getLogger("rlrc").log(Level.INFO, args.getDirection() + ": v=" + args.getVelocity() + "m/s");
+						LOGGER.info(args.getDirection() + ": v=" + args.getVelocity() + "m/s");
 						String gesture = GestureAgent.SWIPE + args.getDirection();
 						if(agent.getGesture().equals(gesture)) {
 							agent.exec();
@@ -190,7 +187,7 @@ public class NITracker extends NI implements Runnable {
 			});
 		}
 		catch(GeneralException e) {
-			Logger.getLogger("rlrc").log(Level.WARNING, "No Swipe Detector! " + e.getMessage());
+			LOGGER.warning("No Swipe Detector! " + e.getMessage());
 		}
 		return swipeDetector;
 	}

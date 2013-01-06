@@ -18,20 +18,17 @@ package org.hs.pforzheim.ti.ni;
 
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.OpenNI.DepthGenerator;
 import org.OpenNI.GeneralException;
 import org.OpenNI.ImageGenerator;
 
-public class NIVisual extends NI 
-{
+public class NIVisual extends NI {
 	
 	public NIVisual() {
 		super();
 		try {
-			Logger.getLogger("rlrc").log(Level.INFO, "Initializing NI Visual...");
+			LOGGER.info("Initializing NI Visual...");
 			if(depthGenerator == null) {
 				if(context.getProductionNodeByName("Depth1") != null)
 					depthGenerator = (DepthGenerator) context.getProductionNodeByName("Depth1");
@@ -74,7 +71,7 @@ public class NIVisual extends NI
 			
 		}
 		catch(Exception e) {
-			Logger.getLogger("rlrc").log(Level.SEVERE, "Depthimage failed! " + e.getMessage());
+			LOGGER.severe("Depthimage failed! " + e.getMessage());
 			return null;
 		}
 	}
@@ -94,7 +91,7 @@ public class NIVisual extends NI
 			
 		}
 		catch(Exception e) {
-			Logger.getLogger("rlrc").log(Level.SEVERE, "Colorimage failed! " + e.getMessage());
+			LOGGER.severe("Colorimage failed! " + e.getMessage());
 			return null;
 		}
 		

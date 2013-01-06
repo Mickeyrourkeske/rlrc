@@ -30,7 +30,6 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferShort;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.Timer;
@@ -47,6 +46,7 @@ import org.hs.pforzheim.ti.ni.NIVisual;
 public class ObserverPanel extends Component {
 	
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = Logger.getLogger(ObserverPanel.class.getName());
 	
 	private NIVisual ni;
 
@@ -62,7 +62,7 @@ public class ObserverPanel extends Component {
 	});
 	
 	public ObserverPanel() {
-		Logger.getLogger("rlrc").log(Level.INFO, "Starting Image Observer");
+		LOGGER.info("Starting Image Observer");
 		this.ni = NICollector.getNIVisual();
 		
 		dimension = new Dimension(NI.xRes, NI.yRes);

@@ -18,7 +18,6 @@ package org.hs.pforzheim.ti.ni;
 
 import java.util.Iterator;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.OpenNI.Context;
@@ -42,6 +41,8 @@ import org.OpenNI.UserGenerator;
  */
 public class NI {
 
+	protected static final Logger LOGGER = Logger.getLogger(NI.class.getName());
+	
 	protected static Context context = null;;
 	protected static boolean mirror = false;
 
@@ -73,7 +74,7 @@ public class NI {
 	public NI() {
 		instance++;
 		if(context == null) {
-			Logger.getLogger("rlrc").log(Level.INFO, "Initializing NI...");
+			LOGGER.info("Initializing NI...");
 			try {
 				context = new Context();
 				
@@ -83,7 +84,7 @@ public class NI {
 			catch (GeneralException e) {
 				String log = "Initializing NI failed! " + e.getMessage();
 				log += "\nTerminating!";
-				Logger.getLogger("rlrc").log(Level.SEVERE, log);
+				LOGGER.severe(log);
 				System.exit(1);
 			}
 		}
@@ -95,8 +96,8 @@ public class NI {
 	@Override
 	protected void finalize() throws Throwable {
 		instance--;
-		
 		if(instance == 0) {
+			LOGGER.info("Releasing context...");
 			context.stopGeneratingAll();
 			context.release();
 		}
@@ -112,43 +113,22 @@ public class NI {
 			while(b.hasNext()) {
 				log += "\n\t" + b.next().getInstanceName();
 			}
-			Logger.getLogger("rlrc").log(Level.INFO, log);
+			LOGGER.info(log);
 		}
 		catch (GeneralException e) {
-			Logger.getLogger("rlrc").log(Level.WARNING, "No Nodes: " + e.getMessage());
+			LOGGER.warning("No Nodes: " + e.getMessage());
 		}
 	}
 	
 	protected static void termintate(Exception e) {
 		String log = "Initializing NI failed! " + e.getMessage();
 		log += "\nTerminating!";
-		Logger.getLogger("rlrc").log(Level.SEVERE, log);
+		LOGGER.severe(log);
 		try {
 			context.stopGeneratingAll();
 		}
 		catch (StatusException se) { }
 		context.release();
 		System.exit(1);
-	}
-
-	/**
-	 * Not needed????
-	 */
-	@Deprecated
-	protected static void waitUpdateAllContextData() {
-		try {
-			if(lockUpdate.tryAcquire()) {					// if first thread, how tries to update context
-				System.out.println("waitandupdate");
-				context.waitAndUpdateAll();
-				lockUpdate.release();
-			}
-//			else {											// else just wait to finish
-//				lockUpdate.acquire();
-//				lockUpdate.release();
-//			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 }

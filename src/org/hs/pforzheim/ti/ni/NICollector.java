@@ -18,6 +18,7 @@ package org.hs.pforzheim.ti.ni;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,7 +38,8 @@ import org.w3c.dom.NodeList;
  */
 public final class NICollector {
 
-//	public static NI ni = null;
+	private static final Logger LOGGER = Logger.getLogger(NICollector.class.getName());
+
 	public static ArrayList<CubeAgent> cubeAgents = null;
 	public static ArrayList<GestureAgent> gestureAgents = null;
 	
@@ -81,6 +83,7 @@ public final class NICollector {
 
 	public static void readAgentsFromXML(String xml) {
 		try {
+			LOGGER.info("Get Agents from xml file...");
 			File xmlFile = new File(xml);
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
@@ -117,7 +120,7 @@ public final class NICollector {
 			}
 		}
 		catch(Exception e) {
-			
+			LOGGER.warning("Could not get Agents from xml file: " + e.getMessage());
 		}
 		
 	}

@@ -17,7 +17,6 @@
 package org.hs.pforzheim.ti.rlrc;
 
 import java.awt.EventQueue;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.hs.pforzheim.ti.ni.NICollector;
@@ -29,12 +28,10 @@ import org.hs.pforzheim.ti.ni.NICollector;
  *
  */
 public class Main {
+	private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Logger.getLogger("rlrc").log(Level.INFO, "rlrc starting...");
+	public Main() {
+		LOGGER.info("rlrc starting...");
 
 		new NICollector();
 
@@ -51,7 +48,7 @@ public class Main {
 			@Override
 			public void run() {
 				try {
-					Logger.getLogger("rlrc").log(Level.INFO, "Starting main window");
+					LOGGER.info("Starting main window");
 					MainPanel window = new MainPanel();
 					window.getFrame().setVisible(true);
 				} catch (Exception e) {
@@ -59,5 +56,13 @@ public class Main {
 				}
 			}
 		});
+	}
+	
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+
+		new Main();
 	}
 }

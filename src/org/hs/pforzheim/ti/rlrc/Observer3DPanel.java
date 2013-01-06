@@ -22,7 +22,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.media.opengl.DebugGL2;
@@ -54,6 +53,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 public class Observer3DPanel extends GLJPanel implements GLEventListener {
 
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = Logger.getLogger(Observer3DPanel.class.getName());
 	
 	private FPSAnimator animator;
 	private GLU glu;
@@ -65,7 +65,7 @@ public class Observer3DPanel extends GLJPanel implements GLEventListener {
 	
 	public Observer3DPanel() {
 		super(createGLCapabilities());
-		Logger.getLogger("rlrc").log(Level.INFO, "Starting OpenGL Observer");
+		LOGGER.info("Starting OpenGL Observer");
 		
 		dimension = new Dimension(640, 480);
 		setSize(dimension);
@@ -77,11 +77,19 @@ public class Observer3DPanel extends GLJPanel implements GLEventListener {
 		ni = NICollector.getNI3d();
 		ni.startCollectingRealPoints();
 	}
+
+	private static GLCapabilities createGLCapabilities() {
+        GLCapabilities capabilities = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+        capabilities.setRedBits(8);
+        capabilities.setBlueBits(8);
+        capabilities.setGreenBits(8);
+        capabilities.setAlphaBits(8);
+        return capabilities;
+    }
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
-		Logger.getLogger("rlrc").log(Level.INFO, "Initializing OpenGL");
 		drawable.setGL(new DebugGL2(gl));
 		
         gl.glLoadIdentity();
@@ -281,15 +289,6 @@ public class Observer3DPanel extends GLJPanel implements GLEventListener {
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
        
-    }
-
-	private static GLCapabilities createGLCapabilities() {
-        GLCapabilities capabilities = new GLCapabilities(GLProfile.get(GLProfile.GL2));
-        capabilities.setRedBits(8);
-        capabilities.setBlueBits(8);
-        capabilities.setGreenBits(8);
-        capabilities.setAlphaBits(8);
-        return capabilities;
     }
 
 	@Override
