@@ -15,18 +15,19 @@
 	</CubeAgent>/usr/bin/xvkbd -xsendevent -text "n"
 	
 	<!-- Example for libreoffice with xvkbd, there is no commandline interface for libreoffic-->
-	<GestureAgent>
+	<!--<GestureAgent>
 		<gesture>SWIPE_LEFT</gesture>
 		<execString>/usr/bin/xvkbd -xsendevent -text "n"</execString>
 	</GestureAgent>
-	<!--<GestureAgent>
+	<GestureAgent>
 		<gesture>SWIPE_RIGHT</gesture>
 		<execString>/usr/bin/xvkbd -xsendevent -text "p"</execString>
-	</GestureAgent>-->
+	</GestureAgent>
 	<GestureAgent>
 		<gesture>SWIPE_UP</gesture>
 		<execString>/usr/bin/xvkbd -xsendevent -text "b"</execString>
-	</GestureAgent>
+	</GestureAgent>-->
+	 
 	<GestureAgent>
 		<gesture>CIRCLE_CLOCKWISE</gesture>
 		<execString>amixer -q sset Master 3%+</execString>
@@ -37,18 +38,18 @@
 	</GestureAgent>
 	
 	<!-- Example for amarok pause, back and forward -->
-	<!--<GestureAgent>
-		<gesture>SWIPE_LEFT</gesture>
-		<execString>amarok -r</execString>
-	</GestureAgent>
 	<GestureAgent>
-		<gesture>SWIPE_RIGHT</gesture>
+		<gesture>SWIPE_LEFT</gesture>
 		<execString>amarok -f</execString>
 	</GestureAgent>
 	<GestureAgent>
-		<gesture>SWIPE_UP</gesture>
+		<gesture>SWIPE_RIGHT</gesture>
+		<execString>amarok -r</execString>
+	</GestureAgent>
+	<GestureAgent>
+		<gesture>PUSH</gesture>
 		<execString>amarok -t</execString>
-	</GestureAgent>-->
+	</GestureAgent>
 </Agent>
 
 <!--

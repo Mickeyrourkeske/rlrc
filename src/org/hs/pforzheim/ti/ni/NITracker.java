@@ -34,15 +34,22 @@ import org.hs.pforzheim.ti.rlrc.GestureAgent;
 import com.primesense.NITE.CircleDetector;
 import com.primesense.NITE.CircleEventArgs;
 import com.primesense.NITE.DirectionVelocityAngleEventArgs;
+import com.primesense.NITE.NoCircleEventArgs;
 import com.primesense.NITE.NullEventArgs;
 import com.primesense.NITE.PointEventArgs;
+import com.primesense.NITE.PushDetector;
 import com.primesense.NITE.SessionManager;
 import com.primesense.NITE.StringPointValueEventArgs;
 import com.primesense.NITE.SwipeDetector;
+import com.primesense.NITE.VelocityAngleEventArgs;
 
 public class NITracker extends NI implements Runnable {
 	
 	private SessionManager sessionManager;
+	
+	private SwipeDetector swipeDetector ;
+	private CircleDetector circleDetector;
+	private PushDetector pushDetector;
 	
 	Thread t;
 	
@@ -80,9 +87,14 @@ public class NITracker extends NI implements Runnable {
 			
 			
 			/* Config Gestures */
-			sessionManager.addListener(swipeDetector());
+			swipeDetector = swipeDetector();
+			sessionManager.addListener(swipeDetector);
 			
-			sessionManager.addListener(circleDetector());
+			circleDetector = circleDetector();
+			sessionManager.addListener(circleDetector);
+			
+			pushDetector = pushDetector();
+			sessionManager.addListener(pushDetector);
 			
 			t = new Thread(this);
 			t.start();
@@ -191,7 +203,7 @@ public class NITracker extends NI implements Runnable {
 			});
 		}
 		catch(GeneralException e) {
-			LOGGER.warning("No Swipe Detector! " + e.getMessage());
+			LOGGER.warning("No swipe detector! " + e.getMessage());
 		}
 		return swipeDetector;
 	}
@@ -202,17 +214,25 @@ public class NITracker extends NI implements Runnable {
 		try {
 			circleDetector = new CircleDetector();
 			
-			
 			circleDetector.getCircleEvent().addObserver(new IObserver<CircleEventArgs>() {
 				@Override
 				public void update(IObservable<CircleEventArgs> obeservable, CircleEventArgs args) {
+					
 					int t = (int)(args.getTimes() * 100);
-					if(t % 25 == 0 && t != circleTime) {
-						String gesture = "";
-						if(t == 0) {
-							LOGGER.info("Circle Detected");
+					if(t == 0) {
+						circleTime = 0;
+						LOGGER.info("Circle detected");
+						/* Remove swipe detector */
+						try {
+							sessionManager.removeListener(swipeDetector);
 						}
-						else if(t > circleTime) {
+						catch (StatusException e) {
+							LOGGER.warning("Could not remove swipe detector");
+						}
+					}
+					else if(t % 25 == 0 && t != circleTime) {
+						String gesture = "";
+						if(t > circleTime) {
 							gesture = GestureAgent.CIRCLE_CLOCKWISE;
 						}
 						else {
@@ -227,11 +247,50 @@ public class NITracker extends NI implements Runnable {
 					}
 				}
 			});
+			
+			circleDetector.getNoCircleEvent().addObserver(new IObserver<NoCircleEventArgs>() {
+				
+				@Override
+				public void update(IObservable<NoCircleEventArgs> observable, NoCircleEventArgs args) {
+					LOGGER.info("Circle detector done");
+					/* Add swipe detector again */
+					try {
+						sessionManager.addListener(swipeDetector);
+					}
+					catch (StatusException e) {
+						LOGGER.warning("Could not add swipe detector");
+					}
+				}
+			});
 		}
 		catch(GeneralException e) {
-			LOGGER.warning("No Circle Detector! " + e.getMessage());	
+			LOGGER.warning("No circle detector! " + e.getMessage());
+			
 		}
 		return circleDetector;
+	}
+	
+	private PushDetector pushDetector() {
+		PushDetector pushDetector = null;
+		try {
+			pushDetector = new PushDetector();
+			
+			pushDetector.getPushEvent().addObserver(new IObserver<VelocityAngleEventArgs>() {
+				
+				@Override
+				public void update(IObservable<VelocityAngleEventArgs> arg0, VelocityAngleEventArgs arg1) {
+					for(GestureAgent agent : NICollector.gestureAgents) {
+						if(agent.getGesture().equals(GestureAgent.PUSH)) {
+							agent.exec();
+						}
+					}
+				}
+			});
+		}
+		catch(GeneralException e) {
+			LOGGER.warning("No push detector! " + e.getMessage());
+		}
+		return pushDetector;
 	}
 	
 	@Override

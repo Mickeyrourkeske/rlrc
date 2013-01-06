@@ -20,13 +20,15 @@ public class GestureAgent extends Agent {
 
 	public static final String SWIPE = "SWIPE_";
 	public static final String SWIPE_LEFT = SWIPE + "LEFT";
-	public static final String SWIPE_RIGHT = "SWIPE_RIGHT";
-	public static final String SWIPE_DOWN = "SWIPE_DOWN";
-	public static final String SWIPE_UP = "SWIPE_UP";
+	public static final String SWIPE_RIGHT = SWIPE + "RIGHT";
+	public static final String SWIPE_DOWN = SWIPE + "DOWN";
+	public static final String SWIPE_UP = SWIPE + "UP";
 	
 	public static final String CIRCLE = "CIRCLE_";
 	public static final String CIRCLE_CLOCKWISE = CIRCLE + "CLOCKWISE";
 	public static final String CIRCLE_COUNTERCLOCKWISE = CIRCLE + "COUNTERCLOCKWISE";
+	
+	public static final String PUSH = "PUSH";
 	
 	private String gesture;
 	
