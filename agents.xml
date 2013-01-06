@@ -12,9 +12,61 @@
 		<z>2500.0</z>
 		<size>100.0</size>
 		<execString>kwrite /etc/issue</execString>
-	</CubeAgent>
+	</CubeAgent>/usr/bin/xvkbd -xsendevent -text "n"
+	
+	<!-- Example for libreoffice with xvkbd, there is no commandline interface for libreoffic-->
 	<GestureAgent>
 		<gesture>SWIPE_LEFT</gesture>
-		<execString>kwrite /etc/issue</execString>
+		<execString>/usr/bin/xvkbd -xsendevent -text "n"</execString>
 	</GestureAgent>
+	<!--<GestureAgent>
+		<gesture>SWIPE_RIGHT</gesture>
+		<execString>/usr/bin/xvkbd -xsendevent -text "p"</execString>
+	</GestureAgent>-->
+	<GestureAgent>
+		<gesture>SWIPE_UP</gesture>
+		<execString>/usr/bin/xvkbd -xsendevent -text "b"</execString>
+	</GestureAgent>
+	<GestureAgent>
+		<gesture>CIRCLE_CLOCKWISE</gesture>
+		<execString>amixer -q sset Master 3%+</execString>
+	</GestureAgent>
+	<GestureAgent>
+		<gesture>CIRCLE_COUNTERCLOCKWISE</gesture>
+		<execString>amixer -q sset Master 3%-</execString>
+	</GestureAgent>
+	
+	<!-- Example for amarok pause, back and forward -->
+	<!--<GestureAgent>
+		<gesture>SWIPE_LEFT</gesture>
+		<execString>amarok -r</execString>
+	</GestureAgent>
+	<GestureAgent>
+		<gesture>SWIPE_RIGHT</gesture>
+		<execString>amarok -f</execString>
+	</GestureAgent>
+	<GestureAgent>
+		<gesture>SWIPE_UP</gesture>
+		<execString>amarok -t</execString>
+	</GestureAgent>-->
 </Agent>
+
+<!--
+Example commands:
+Amarok:
+    amarok -r                         previous song
+    amarok -f                         next song
+    amarok -t                         play/pause
+    
+Sound control:
+    amixer -q sset Master 3%+         3% louder
+    amixer -q sset Master 3%-         3% quieter
+    amixer -q sset Master toggle      mute/unmoute
+  
+libreoffice (only with xvkbd):
+    xvkbd -xsendevent -text "n"       next slide
+    xvkbd -xsendevent -text "p"       privious slide
+    xvkbd -xsendevent -text "b"       (un)blank slide
+
+-->
+

@@ -24,6 +24,10 @@ public class GestureAgent extends Agent {
 	public static final String SWIPE_DOWN = "SWIPE_DOWN";
 	public static final String SWIPE_UP = "SWIPE_UP";
 	
+	public static final String CIRCLE = "CIRCLE_";
+	public static final String CIRCLE_CLOCKWISE = CIRCLE + "CLOCKWISE";
+	public static final String CIRCLE_COUNTERCLOCKWISE = CIRCLE + "COUNTERCLOCKWISE";
+	
 	private String gesture;
 	
 	public GestureAgent(String gesture, String execString) {

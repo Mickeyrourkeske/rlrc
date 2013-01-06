@@ -31,6 +31,8 @@ import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
 import org.hs.pforzheim.ti.rlrc.GestureAgent;
 
+import com.primesense.NITE.CircleDetector;
+import com.primesense.NITE.CircleEventArgs;
 import com.primesense.NITE.DirectionVelocityAngleEventArgs;
 import com.primesense.NITE.NullEventArgs;
 import com.primesense.NITE.PointEventArgs;
@@ -46,6 +48,8 @@ public class NITracker extends NI implements Runnable {
 	
 	private HashMap<Integer, Point3D> hands;
 	private Semaphore lockHand;
+	
+	private int circleTime = 0;
 
 	public NITracker() {
 		super();
@@ -78,7 +82,7 @@ public class NITracker extends NI implements Runnable {
 			/* Config Gestures */
 			sessionManager.addListener(swipeDetector());
 			
-//			sessionManager.addListener(circleDetector());
+			sessionManager.addListener(circleDetector());
 			
 			t = new Thread(this);
 			t.start();
@@ -176,8 +180,8 @@ public class NITracker extends NI implements Runnable {
 			swipeDetector.getGeneralSwipeEvent().addObserver(new IObserver<DirectionVelocityAngleEventArgs>() {
 				@Override
 				public void update(IObservable<DirectionVelocityAngleEventArgs> obeservable, DirectionVelocityAngleEventArgs args) {
+					LOGGER.info(args.getDirection() + ": v=" + args.getVelocity() + "m/s");
 					for(GestureAgent agent : NICollector.gestureAgents) {
-						LOGGER.info(args.getDirection() + ": v=" + args.getVelocity() + "m/s");
 						String gesture = GestureAgent.SWIPE + args.getDirection();
 						if(agent.getGesture().equals(gesture)) {
 							agent.exec();
@@ -192,25 +196,43 @@ public class NITracker extends NI implements Runnable {
 		return swipeDetector;
 	}
 	
-	// TODO get direction out of points
-//	private CircleDetector circleDetector() {
-//		CircleDetector circleDetector = null;
-//		try {
-//			circleDetector = new CircleDetector();
-//			
-//			circleDetector.getCircleEvent().addObserver(new IObserver<CircleEventArgs>() {
-//				@Override
-//				public void update(IObservable<CircleEventArgs> obeservable, CircleEventArgs args) {
-//					Circle circle = args.getCircle();
-//					System.out.println(circle.getRadius());
-//				}
-//			});
-//		}
-//		catch(GeneralException e) {
-//			Logger.getLogger("rlrc").log(Level.WARNING, "No Circle Detector! " + e.getMessage());	
-//		}
-//		return circleDetector;
-//	}
+	private CircleDetector circleDetector() {
+		/* if time gets incremented, it means a clockwise turn; one turn means |time| = 1 */
+		CircleDetector circleDetector = null;
+		try {
+			circleDetector = new CircleDetector();
+			
+			
+			circleDetector.getCircleEvent().addObserver(new IObserver<CircleEventArgs>() {
+				@Override
+				public void update(IObservable<CircleEventArgs> obeservable, CircleEventArgs args) {
+					int t = (int)(args.getTimes() * 100);
+					if(t % 25 == 0 && t != circleTime) {
+						String gesture = "";
+						if(t == 0) {
+							LOGGER.info("Circle Detected");
+						}
+						else if(t > circleTime) {
+							gesture = GestureAgent.CIRCLE_CLOCKWISE;
+						}
+						else {
+							gesture = GestureAgent.CIRCLE_COUNTERCLOCKWISE;
+						}
+						for(GestureAgent agent : NICollector.gestureAgents) {
+							if(agent.getGesture().equals(gesture)) {
+								agent.exec();
+							}
+						}
+						circleTime = t;
+					}
+				}
+			});
+		}
+		catch(GeneralException e) {
+			LOGGER.warning("No Circle Detector! " + e.getMessage());	
+		}
+		return circleDetector;
+	}
 	
 	@Override
 	public void run() {
