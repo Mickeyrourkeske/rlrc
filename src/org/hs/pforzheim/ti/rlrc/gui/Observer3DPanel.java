@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with RLRC. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.hs.pforzheim.ti.rlrc;
+package org.hs.pforzheim.ti.rlrc.gui;
 
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
@@ -37,6 +37,7 @@ import javax.media.opengl.glu.GLUquadric;
 import org.OpenNI.Point3D;
 import org.hs.pforzheim.ti.ni.NI3d;
 import org.hs.pforzheim.ti.ni.NICollector;
+import org.hs.pforzheim.ti.rlrc.CubeAgent;
 
 import com.jogamp.opengl.util.FPSAnimator;
 

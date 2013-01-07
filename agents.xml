@@ -5,6 +5,7 @@
 		<z>500.0</z>
 		<size>100.0</size>
 		<execString>kwrite /etc/issue</execString>
+		<comment></comment>
 	</CubeAgent>
 	<CubeAgent>
 		<x>50.0</x>
@@ -31,24 +32,29 @@
 	<GestureAgent>
 		<gesture>CIRCLE_CLOCKWISE</gesture>
 		<execString>amixer -q sset Master 3%+</execString>
+		<comment>Volume+</comment>
 	</GestureAgent>
 	<GestureAgent>
 		<gesture>CIRCLE_COUNTERCLOCKWISE</gesture>
 		<execString>amixer -q sset Master 3%-</execString>
+		<comment>Volume-</comment>
 	</GestureAgent>
 	
 	<!-- Example for amarok pause, back and forward -->
 	<GestureAgent>
 		<gesture>SWIPE_LEFT</gesture>
 		<execString>amarok -f</execString>
+		<comment>Next song</comment>
 	</GestureAgent>
 	<GestureAgent>
 		<gesture>SWIPE_RIGHT</gesture>
 		<execString>amarok -r</execString>
+		<comment>Previous Song</comment>
 	</GestureAgent>
 	<GestureAgent>
 		<gesture>PUSH</gesture>
 		<execString>amarok -t</execString>
+		<comment>Play / Pause</comment>
 	</GestureAgent>
 </Agent>
 

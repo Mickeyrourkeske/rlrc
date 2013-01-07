@@ -101,7 +101,14 @@ public final class NICollector {
 					float z = new Float(getValue("z", element));
 					float size = new Float(getValue("size", element));
 					String execString = getValue("execString", element);
-					cubeAgents.add(new CubeAgent(new Point3D(x, y, z), size, execString));
+					try {
+						String comment = getValue("comment", element);
+						cubeAgents.add(new CubeAgent(new Point3D(x, y, z), size, execString, comment));
+					}
+					catch(Exception e) {
+						LOGGER.warning("No comment specified for " + execString);
+						cubeAgents.add(new CubeAgent(new Point3D(x, y, z), size, execString));
+					}
 				}
 			}
 			
@@ -115,7 +122,8 @@ public final class NICollector {
 					Element element = (Element)node;
 					String gesture = getValue("gesture", element);
 					String execString = getValue("execString", element);
-					gestureAgents.add(new GestureAgent(gesture, execString));
+					String comment = getValue("comment", element);
+					gestureAgents.add(new GestureAgent(gesture, execString, comment));
 				}
 			}
 		}
@@ -130,4 +138,9 @@ public final class NICollector {
 	}
 	
 	//TODO public static void writeAgentsToXML(String xml)
+	
+	//TODO
+	public static void disposeNI() {
+		
+	}
 }

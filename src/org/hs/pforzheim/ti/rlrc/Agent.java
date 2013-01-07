@@ -29,12 +29,20 @@ public class Agent {
 	
 	protected String logInfo;
 	protected String execString;
+	protected String comment;
 	protected int executions;
 	
 	public Agent(String execString) {
 		this.execString = execString;
 		this.executions = 0;
 		this.logInfo = "";
+	}
+	
+	public Agent(String execString, String comment) {
+		this.execString = execString;
+		this.executions = 0;
+		this.logInfo = "";
+		this.comment = comment;
 	}
 
 	public int getExecutions() {
@@ -44,7 +52,11 @@ public class Agent {
 	public void exec() {
 		executions++;
 		try {
-			LOGGER.info(logInfo + execString + " (" + executions + ") starting... ");
+			if(comment == null)
+				LOGGER.info(logInfo + execString + " (" + executions + ") starting... ");
+			else {
+				LOGGER.info(comment);
+			}
 			Runtime.getRuntime().exec(execString);
 		}
 		catch (IOException e) {

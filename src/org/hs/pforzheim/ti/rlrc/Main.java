@@ -20,6 +20,7 @@ import java.awt.EventQueue;
 import java.util.logging.Logger;
 
 import org.hs.pforzheim.ti.ni.NICollector;
+import org.hs.pforzheim.ti.rlrc.gui.MainPanel;
 
 
 
@@ -50,7 +51,8 @@ public class Main {
 						LOGGER.info("Starting main window");
 						MainPanel window = new MainPanel();
 						window.getFrame().setVisible(true);
-					} catch (Exception e) {
+					} 
+					catch (Exception e) {
 						e.printStackTrace();
 					}
 				}

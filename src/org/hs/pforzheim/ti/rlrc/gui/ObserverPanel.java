@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with RLRC.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.hs.pforzheim.ti.rlrc;
+package org.hs.pforzheim.ti.rlrc.gui;
 
 import java.awt.Component;
 import java.awt.Dimension;

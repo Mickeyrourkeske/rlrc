@@ -38,6 +38,11 @@ public class GestureAgent extends Agent {
 		this.logInfo = "Gesture " + gesture + " detected: ";
 	}
 	
+	public GestureAgent(String gesture, String execString, String comment) {
+		super(execString, comment);
+		this.gesture = gesture;
+	}
+	
 	public String getGesture() {
 		return gesture;
 	}

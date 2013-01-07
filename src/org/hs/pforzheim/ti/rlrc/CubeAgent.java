@@ -38,6 +38,13 @@ public class CubeAgent extends Agent {
 		this.logInfo = "Cube at (" + position.getX() + "|" + position.getY() + "|" + position.getZ() + ") hit: "; 
 	}
 	
+	public CubeAgent(Point3D position, float size, String execString, String comment) {
+		super(execString, comment);
+		this.position = position;
+		this.size = size;
+
+	}
+	
 	public Point3D getPosition() {
 		return position;
 	}
