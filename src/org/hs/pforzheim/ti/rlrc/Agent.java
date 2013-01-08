@@ -63,4 +63,12 @@ public class Agent {
 			LOGGER.warning("Program " + execString + " could not be started! " + e.getMessage());
 		}
 	}
+	
+	public String getCommand() {
+		return execString;
+	}
+	
+	public String getComment() {
+		return comment;
+	}
 }

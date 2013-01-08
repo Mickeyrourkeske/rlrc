@@ -22,6 +22,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -29,14 +30,19 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.DefaultComboBoxModel;
+
+import org.OpenNI.Point3D;
+import org.hs.pforzheim.ti.ni.NICollector;
+import org.hs.pforzheim.ti.rlrc.CubeAgent;
+import org.hs.pforzheim.ti.rlrc.GestureAgent;
 import org.hs.pforzheim.ti.rlrc.GestureAgent.GESTURES;
 
 public class AgentPanel extends JPanel {
-	private JTextField execText;
-	private JTextField commentText;
-	private JTextField textField;
-	private JTextField textField_1;
+	
+	private static final long serialVersionUID = 1L;
+	
+	private JPanel cubePanel;
+	private JPanel gesturePanel;
 
 	/**
 	 * Create the panel.
@@ -44,27 +50,101 @@ public class AgentPanel extends JPanel {
 	public AgentPanel() {
 		setMinimumSize(new Dimension(1280, 10));
 		GridBagLayout gridBagLayout = new GridBagLayout();
-		gridBagLayout.columnWidths = new int[]{0, 469, 0};
-		gridBagLayout.rowHeights = new int[]{0, 0};
-		gridBagLayout.columnWeights = new double[]{1.0, 1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{1.0, Double.MIN_VALUE};
+//		gridBagLayout.columnWidths = new int[]{640, 640};
+//		gridBagLayout.rowHeights = new int[]{500, 1};
+		gridBagLayout.columnWeights = new double[]{1,1};//{1.0, 1.0, Double.MIN_VALUE};
+		gridBagLayout.rowWeights = new double[]{0, 1};//{1.0, Double.MIN_VALUE};
 		setLayout(gridBagLayout);
 		
-		JPanel cubePanel = new JPanel();
+		cubePanel = new JPanel();
 		cubePanel.setMinimumSize(new Dimension(640, 10));
 		GridBagConstraints gbc_cubePanel = new GridBagConstraints();
-		gbc_cubePanel.insets = new Insets(0, 0, 0, 5);
-		gbc_cubePanel.fill = GridBagConstraints.BOTH;
+//		gbc_cubePanel.insets = new Insets(0, 0, 0, 5);
+//		gbc_cubePanel.fill = GridBagConstraints.BOTH;
 		gbc_cubePanel.gridx = 0;
 		gbc_cubePanel.gridy = 0;
+		gbc_cubePanel.weighty = 1;
+		gbc_cubePanel.weightx = 1;
+		gbc_cubePanel.anchor = GridBagConstraints.NORTH;
 		add(cubePanel, gbc_cubePanel);
 		GridBagLayout gbl_cubePanel = new GridBagLayout();
 		gbl_cubePanel.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
-		gbl_cubePanel.rowHeights = new int[]{0, 0, 0, 0};
+		gbl_cubePanel.rowHeights = new int[]{0};
 		gbl_cubePanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0, 1.0, Double.MIN_VALUE};
-		gbl_cubePanel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
+//		gbl_cubePanel.rowWeights = new double[]{0, 0, 0, 0, 0, 1};//0.0, 0.0, 0.0, Double.MIN_VALUE};
 		cubePanel.setLayout(gbl_cubePanel);
 		
+		
+		gesturePanel = new JPanel();
+		gesturePanel.setMinimumSize(new Dimension(640, 10));
+		GridBagConstraints gbc_gesturePanel = new GridBagConstraints();
+//		gbc_gesturePanel.fill = GridBagConstraints.BOTH;
+		gbc_gesturePanel.gridx = 1;
+		gbc_gesturePanel.gridy = 0;
+		gbc_gesturePanel.weighty = 1;
+		gbc_gesturePanel.weightx = 1;
+		gbc_gesturePanel.anchor = GridBagConstraints.NORTH;
+		add(gesturePanel, gbc_gesturePanel);
+		GridBagLayout gbl_gesturePanel = new GridBagLayout();
+		gbl_gesturePanel.columnWidths = new int[]{0, 0, 0, 0, 0};
+		gbl_gesturePanel.rowHeights = new int[]{0};
+		gbl_gesturePanel.columnWeights = new double[]{0.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
+//		gbl_gesturePanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gesturePanel.setLayout(gbl_gesturePanel);
+		
+		
+		initCubeRow();
+		
+		for(int i = 0; i < NICollector.cubeAgents.size(); i++) {
+			CubeAgent agent = NICollector.cubeAgents.get(i);
+			createCubeLine(true, agent.getPosition(), agent.getCommand(), agent.getComment(), i + 2);
+		}
+		
+		
+		initGestureRow();
+		
+		
+		for(int i = 0; i < NICollector.gestureAgents.size(); i++) {
+			GestureAgent agent = NICollector.gestureAgents.get(i);
+			createGestureLine(true, agent.getGesture(), agent.getCommand(), agent.getComment(), i + 2);
+		}
+
+	}
+
+	private void initGestureRow() {
+		
+		JLabel lblGestures = new JLabel("Gestures");
+		lblGestures.setFont(new Font("Dialog", Font.BOLD, 16));
+		GridBagConstraints gbc_lblGestures = new GridBagConstraints();
+		gbc_lblGestures.gridwidth = 4;
+		gbc_lblGestures.insets = new Insets(0, 0, 5, 0);
+		gbc_lblGestures.gridx = 0;
+		gbc_lblGestures.gridy = 0;
+		gesturePanel.add(lblGestures, gbc_lblGestures);
+		
+		JLabel lblGesture = new JLabel("Gesture");
+		GridBagConstraints gbc_lblGesture = new GridBagConstraints();
+		gbc_lblGesture.insets = new Insets(0, 0, 5, 5);
+		gbc_lblGesture.gridx = 1;
+		gbc_lblGesture.gridy = 1;
+		gesturePanel.add(lblGesture, gbc_lblGesture);
+		
+		JLabel lblCommand = new JLabel("Command");
+		GridBagConstraints gbc_lblCommand = new GridBagConstraints();
+		gbc_lblCommand.insets = new Insets(0, 0, 5, 5);
+		gbc_lblCommand.gridx = 2;
+		gbc_lblCommand.gridy = 1;
+		gesturePanel.add(lblCommand, gbc_lblCommand);
+		
+		JLabel lblComment = new JLabel("Comment");
+		GridBagConstraints gbc_lblComment = new GridBagConstraints();
+		gbc_lblComment.insets = new Insets(0, 0, 5, 0);
+		gbc_lblComment.gridx = 3;
+		gbc_lblComment.gridy = 1;
+		gesturePanel.add(lblComment, gbc_lblComment);
+	}
+
+	private void initCubeRow() {
 		JLabel lblCubes = new JLabel("Cubes");
 		lblCubes.setFont(new Font("Dialog", Font.BOLD, 16));
 		GridBagConstraints gbc_lblCubes = new GridBagConstraints();
@@ -108,132 +188,98 @@ public class AgentPanel extends JPanel {
 		gbc_lblComment_1.gridx = 5;
 		gbc_lblComment_1.gridy = 1;
 		cubePanel.add(lblComment_1, gbc_lblComment_1);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void createGestureLine(boolean enabled, GESTURES gesture, String command, String comment, int row) {
+		JCheckBox checkEnabled = new JCheckBox("");
+		checkEnabled.setSelected(enabled);
+		GridBagConstraints gbc_checkEnabled = new GridBagConstraints();
+		gbc_checkEnabled.insets = new Insets(0, 0, 0, 5);
+		gbc_checkEnabled.gridx = 0;
+		gbc_checkEnabled.gridy = row;
+		gesturePanel.add(checkEnabled, gbc_checkEnabled);
 		
-		JCheckBox checkBox = new JCheckBox("");
-		GridBagConstraints gbc_checkBox = new GridBagConstraints();
-		gbc_checkBox.insets = new Insets(0, 0, 0, 5);
-		gbc_checkBox.gridx = 0;
-		gbc_checkBox.gridy = 2;
-		cubePanel.add(checkBox, gbc_checkBox);
-		
-		JSpinner xSpinner = new JSpinner();
-		xSpinner.setModel(new SpinnerNumberModel(1000, 500, 10000, 10));
-		GridBagConstraints gbc_xSpinner = new GridBagConstraints();
-		gbc_xSpinner.insets = new Insets(0, 0, 0, 5);
-		gbc_xSpinner.gridx = 1;
-		gbc_xSpinner.gridy = 2;
-		cubePanel.add(xSpinner, gbc_xSpinner);
-		
-		JSpinner ySpinner = new JSpinner();
-		ySpinner.setModel(new SpinnerNumberModel(1000, 500, 10000, 10));
-		GridBagConstraints gbc_ySpinner = new GridBagConstraints();
-		gbc_ySpinner.insets = new Insets(0, 0, 0, 5);
-		gbc_ySpinner.gridx = 2;
-		gbc_ySpinner.gridy = 2;
-		cubePanel.add(ySpinner, gbc_ySpinner);
-		
-		JSpinner zSpinner = new JSpinner();
-		zSpinner.setModel(new SpinnerNumberModel(1000, 500, 10000, 10));
-		GridBagConstraints gbc_zSpinner = new GridBagConstraints();
-		gbc_zSpinner.insets = new Insets(0, 0, 0, 5);
-		gbc_zSpinner.gridx = 3;
-		gbc_zSpinner.gridy = 2;
-		cubePanel.add(zSpinner, gbc_zSpinner);
-		
-		execText = new JTextField();
-		GridBagConstraints gbc_execText = new GridBagConstraints();
-		gbc_execText.insets = new Insets(0, 0, 0, 5);
-		gbc_execText.fill = GridBagConstraints.HORIZONTAL;
-		gbc_execText.gridx = 4;
-		gbc_execText.gridy = 2;
-		cubePanel.add(execText, gbc_execText);
-		execText.setColumns(10);
-		
-		commentText = new JTextField();
-		GridBagConstraints gbc_commentText = new GridBagConstraints();
-		gbc_commentText.fill = GridBagConstraints.HORIZONTAL;
-		gbc_commentText.gridx = 5;
-		gbc_commentText.gridy = 2;
-		cubePanel.add(commentText, gbc_commentText);
-		commentText.setColumns(10);
-		
-		JPanel gesturePanel = new JPanel();
-		gesturePanel.setMinimumSize(new Dimension(640, 10));
-		GridBagConstraints gbc_gesturePanel = new GridBagConstraints();
-		gbc_gesturePanel.fill = GridBagConstraints.BOTH;
-		gbc_gesturePanel.gridx = 1;
-		gbc_gesturePanel.gridy = 0;
-		add(gesturePanel, gbc_gesturePanel);
-		GridBagLayout gbl_gesturePanel = new GridBagLayout();
-		gbl_gesturePanel.columnWidths = new int[]{0, 0, 0, 0, 0};
-		gbl_gesturePanel.rowHeights = new int[]{0, 0, 0, 0};
-		gbl_gesturePanel.columnWeights = new double[]{0.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
-		gbl_gesturePanel.rowWeights = new double[]{0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gesturePanel.setLayout(gbl_gesturePanel);
-		
-		JLabel lblGestures = new JLabel("Gestures");
-		lblGestures.setFont(new Font("Dialog", Font.BOLD, 16));
-		GridBagConstraints gbc_lblGestures = new GridBagConstraints();
-		gbc_lblGestures.gridwidth = 4;
-		gbc_lblGestures.insets = new Insets(0, 0, 5, 0);
-		gbc_lblGestures.gridx = 0;
-		gbc_lblGestures.gridy = 0;
-		gesturePanel.add(lblGestures, gbc_lblGestures);
-		
-		JLabel lblGesture = new JLabel("Gesture");
-		GridBagConstraints gbc_lblGesture = new GridBagConstraints();
-		gbc_lblGesture.insets = new Insets(0, 0, 5, 5);
-		gbc_lblGesture.gridx = 1;
-		gbc_lblGesture.gridy = 1;
-		gesturePanel.add(lblGesture, gbc_lblGesture);
-		
-		JLabel lblCommand = new JLabel("Command");
-		GridBagConstraints gbc_lblCommand = new GridBagConstraints();
-		gbc_lblCommand.insets = new Insets(0, 0, 5, 5);
-		gbc_lblCommand.gridx = 2;
-		gbc_lblCommand.gridy = 1;
-		gesturePanel.add(lblCommand, gbc_lblCommand);
-		
-		JLabel lblComment = new JLabel("Comment");
-		GridBagConstraints gbc_lblComment = new GridBagConstraints();
-		gbc_lblComment.insets = new Insets(0, 0, 5, 0);
-		gbc_lblComment.gridx = 3;
-		gbc_lblComment.gridy = 1;
-		gesturePanel.add(lblComment, gbc_lblComment);
-		
-		JCheckBox checkBox_1 = new JCheckBox("");
-		GridBagConstraints gbc_checkBox_1 = new GridBagConstraints();
-		gbc_checkBox_1.insets = new Insets(0, 0, 0, 5);
-		gbc_checkBox_1.gridx = 0;
-		gbc_checkBox_1.gridy = 2;
-		gesturePanel.add(checkBox_1, gbc_checkBox_1);
-		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(GESTURES.values()));
+		JComboBox comboGesture = new JComboBox();
+		comboGesture.setModel(new DefaultComboBoxModel(GESTURES.values()));
+		comboGesture.setSelectedItem(gesture);
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.insets = new Insets(0, 0, 0, 5);
 		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboBox.gridx = 1;
-		gbc_comboBox.gridy = 2;
-		gesturePanel.add(comboBox, gbc_comboBox);
+		gbc_comboBox.gridy = row;
+		gesturePanel.add(comboGesture, gbc_comboBox);
 		
-		textField = new JTextField();
+		JTextField textCommand = new JTextField(command);
 		GridBagConstraints gbc_textField = new GridBagConstraints();
 		gbc_textField.insets = new Insets(0, 0, 0, 5);
 		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField.gridx = 2;
-		gbc_textField.gridy = 2;
-		gesturePanel.add(textField, gbc_textField);
-		textField.setColumns(10);
+		gbc_textField.gridy = row;
+		gesturePanel.add(textCommand, gbc_textField);
+		textCommand.setColumns(10);
 		
-		textField_1 = new JTextField();
+		JTextField textComment = new JTextField(comment);
 		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
+		gbc_textField_1.insets = new Insets(0, 0, 0, 0);
 		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField_1.gridx = 3;
-		gbc_textField_1.gridy = 2;
-		gesturePanel.add(textField_1, gbc_textField_1);
-		textField_1.setColumns(10);
+		gbc_textField_1.gridy = row;
+		gesturePanel.add(textComment, gbc_textField_1);
+		textComment.setColumns(10);
+	}
 
+	private void createCubeLine(boolean enabled, Point3D position, String command, String comment, int row) {
+		JCheckBox checkEnabled = new JCheckBox("");
+		checkEnabled.setSelected(enabled);
+		GridBagConstraints gbc_checkEnabled = new GridBagConstraints();
+		gbc_checkEnabled.insets = new Insets(0, 0, 0, 5);
+		gbc_checkEnabled.gridx = 0;
+		gbc_checkEnabled.gridy = row;
+		cubePanel.add(checkEnabled, gbc_checkEnabled);
+		
+		JSpinner xSpinner = new JSpinner();
+		xSpinner.setModel(new SpinnerNumberModel((int) position.getX(), -9000, 9000, 10));
+		GridBagConstraints gbc_xSpinner = new GridBagConstraints();
+		gbc_xSpinner.insets = new Insets(0, 0, 0, 5);
+		gbc_xSpinner.gridx = 1;
+		gbc_xSpinner.gridy = row;
+		cubePanel.add(xSpinner, gbc_xSpinner);
+		
+		JSpinner ySpinner = new JSpinner();
+		ySpinner.setModel(new SpinnerNumberModel((int) position.getY(), -9000, 9000, 10));
+		GridBagConstraints gbc_ySpinner = new GridBagConstraints();
+		gbc_ySpinner.insets = new Insets(0, 0, 0, 5);
+		gbc_ySpinner.gridx = 2;
+		gbc_ySpinner.gridy = row;
+		cubePanel.add(ySpinner, gbc_ySpinner);
+		
+		JSpinner zSpinner = new JSpinner();
+		zSpinner.setModel(new SpinnerNumberModel((int) position.getZ(), 0, 10000, 10));
+		GridBagConstraints gbc_zSpinner = new GridBagConstraints();
+		gbc_zSpinner.insets = new Insets(0, 0, 0, 5);
+		gbc_zSpinner.gridx = 3;
+		gbc_zSpinner.gridy = row;
+		cubePanel.add(zSpinner, gbc_zSpinner);
+		
+		JTextField textCommand = new JTextField(command);
+		GridBagConstraints gbc_execText = new GridBagConstraints();
+		gbc_execText.insets = new Insets(0, 0, 0, 5);
+		gbc_execText.fill = GridBagConstraints.HORIZONTAL;
+		gbc_execText.gridx = 4;
+		gbc_execText.gridy = row;
+		cubePanel.add(textCommand, gbc_execText);
+		textCommand.setColumns(10);
+		
+		JTextField textComment = new JTextField(comment);
+		GridBagConstraints gbc_commentText = new GridBagConstraints();
+		gbc_commentText.insets = new Insets(0, 0, 0, 5);
+		gbc_commentText.fill = GridBagConstraints.HORIZONTAL;
+		gbc_commentText.gridx = 5;
+		gbc_commentText.gridy = row;
+		cubePanel.add(textComment, gbc_commentText);
+		textComment.setColumns(10);
+		
 	}
 
 }
