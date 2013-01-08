@@ -16,34 +16,58 @@
  */
 package org.hs.pforzheim.ti.rlrc;
 
-public class GestureAgent extends Agent {
+import com.primesense.NITE.Direction;
 
-	public static final String SWIPE = "SWIPE_";
-	public static final String SWIPE_LEFT = SWIPE + "LEFT";
-	public static final String SWIPE_RIGHT = SWIPE + "RIGHT";
-	public static final String SWIPE_DOWN = SWIPE + "DOWN";
-	public static final String SWIPE_UP = SWIPE + "UP";
+public class GestureAgent extends Agent {
 	
-	public static final String CIRCLE = "CIRCLE_";
-	public static final String CIRCLE_CLOCKWISE = CIRCLE + "CLOCKWISE";
-	public static final String CIRCLE_COUNTERCLOCKWISE = CIRCLE + "COUNTERCLOCKWISE";
+	public enum GESTURES {
+		SWIPE_LEFT, SWIPE_RIGHT, SWIPE_DOWN, SWIPE_UP,
+		CIRCLE_CLOCKWISE, CIRCLE_COUNTERCLOCKWISE,
+		PUSH,
+		NONE;
+		
+		public static GESTURES toEnum(String gesture){
+			if(gesture.equals("SWIPE_LEFT"))
+				return SWIPE_LEFT;
+			else if(gesture.equals("SWIPE_RIGHT"))
+				return SWIPE_RIGHT;
+			else if(gesture.equals("SWIPE_DOWN"))
+				return SWIPE_DOWN;
+			else if(gesture.equals("SWIPE_UP"))
+				return SWIPE_UP;
+			else if(gesture.equals("CIRCLE_CLOCKWISE"))
+				return CIRCLE_CLOCKWISE;
+			else if(gesture.equals("CIRCLE_COUNTERCLOCKWISE"))
+				return CIRCLE_COUNTERCLOCKWISE;
+			else if(gesture.equals("PUSH"))
+				return PUSH;
+			else
+				return NONE;
+		}
+		
+		public static GESTURES getSwipeEnum(Direction direction) {
+			return toEnum("SWIPE_" + direction);
+		}
+	}
 	
-	public static final String PUSH = "PUSH";
-	
-	private String gesture;
+	private GESTURES gesture;
 	
 	public GestureAgent(String gesture, String execString) {
 		super(execString);
-		this.gesture = gesture;
+		
+		this.gesture = GESTURES.toEnum(gesture);
 		this.logInfo = "Gesture " + gesture + " detected: ";
 	}
 	
 	public GestureAgent(String gesture, String execString, String comment) {
 		super(execString, comment);
-		this.gesture = gesture;
+		this.gesture = GESTURES.toEnum(gesture);
 	}
 	
-	public String getGesture() {
+	public GESTURES getGesture() {
 		return gesture;
 	}
+	
+	
+	
 }

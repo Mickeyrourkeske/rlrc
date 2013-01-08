@@ -57,17 +57,19 @@ public class OutputPanel extends JLabel {
 				}
 				firePropertyChange("alpha", alpha, a);
 				alpha = a;
+				
 				repaint();
 			}
 		});
 		
 		timer.setRepeats(true);
 		timer.setCoalesce(true);
+		
+		showOutput("Started");
 	}
 	
 	public void showOutput(String text) {
-		this.setText(text);
-		
+		setText(text);
 		firePropertyChange("alpha", alpha, 1.0f);
 		alpha = 1.0f;
 		repaint();

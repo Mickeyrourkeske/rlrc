@@ -8,11 +8,11 @@
  *
  * RLRC is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  * 
  * You should have received a copy of the GNU General Public License
- * along with RLRC.  If not, see <http://www.gnu.org/licenses/>.
+ * along with RLRC. If not, see <http://www.gnu.org/licenses/>.
  */
 package org.hs.pforzheim.ti.rlrc.gui;
 
@@ -70,10 +70,19 @@ public class MainPanel {
 		OutputPanel tptpnlAgentOutput = new OutputPanel();
 		GridBagConstraints gbc_tptpnlAgentOutput = new GridBagConstraints();
 		gbc_tptpnlAgentOutput.gridwidth = 2;
-		gbc_tptpnlAgentOutput.insets = new Insets(0, 0, 5, 5);
+		gbc_tptpnlAgentOutput.insets = new Insets(0, 0, 5, 0);
 		gbc_tptpnlAgentOutput.gridx = 0;
 		gbc_tptpnlAgentOutput.gridy = 1;
 		frame.getContentPane().add(tptpnlAgentOutput, gbc_tptpnlAgentOutput);
+		
+		AgentPanel agentPanel = new AgentPanel();
+		GridBagConstraints gbc_agentPanel = new GridBagConstraints();
+		gbc_agentPanel.gridwidth = 2;
+		gbc_agentPanel.insets = new Insets(0, 0, 0, 5);
+		gbc_agentPanel.fill = GridBagConstraints.BOTH;
+		gbc_agentPanel.gridx = 0;
+		gbc_agentPanel.gridy = 2;
+		frame.getContentPane().add(agentPanel, gbc_agentPanel);
 		
 		try {
 		} catch (Exception e) {

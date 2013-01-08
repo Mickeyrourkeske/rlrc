@@ -30,6 +30,7 @@ import org.OpenNI.InactiveHandEventArgs;
 import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
 import org.hs.pforzheim.ti.rlrc.GestureAgent;
+import org.hs.pforzheim.ti.rlrc.GestureAgent.GESTURES;
 
 import com.primesense.NITE.CircleDetector;
 import com.primesense.NITE.CircleEventArgs;
@@ -194,8 +195,8 @@ public class NITracker extends NI implements Runnable {
 				public void update(IObservable<DirectionVelocityAngleEventArgs> obeservable, DirectionVelocityAngleEventArgs args) {
 					LOGGER.info(args.getDirection() + ": v=" + args.getVelocity() + "m/s");
 					for(GestureAgent agent : NICollector.gestureAgents) {
-						String gesture = GestureAgent.SWIPE + args.getDirection();
-						if(agent.getGesture().equals(gesture)) {
+						GESTURES gesture = GESTURES.getSwipeEnum(args.getDirection());
+						if(agent.getGesture() == gesture) {
 							agent.exec();
 						}
 					}
@@ -231,15 +232,15 @@ public class NITracker extends NI implements Runnable {
 						}
 					}
 					else if(t % 25 == 0 && t != circleTime) {
-						String gesture = "";
+						GESTURES gesture = GESTURES.NONE;
 						if(t > circleTime) {
-							gesture = GestureAgent.CIRCLE_CLOCKWISE;
+							gesture = GESTURES.CIRCLE_CLOCKWISE;
 						}
 						else {
-							gesture = GestureAgent.CIRCLE_COUNTERCLOCKWISE;
+							gesture = GESTURES.CIRCLE_CLOCKWISE;
 						}
 						for(GestureAgent agent : NICollector.gestureAgents) {
-							if(agent.getGesture().equals(gesture)) {
+							if(agent.getGesture() == gesture) {
 								agent.exec();
 							}
 						}
@@ -280,7 +281,7 @@ public class NITracker extends NI implements Runnable {
 				@Override
 				public void update(IObservable<VelocityAngleEventArgs> arg0, VelocityAngleEventArgs arg1) {
 					for(GestureAgent agent : NICollector.gestureAgents) {
-						if(agent.getGesture().equals(GestureAgent.PUSH)) {
+						if(agent.getGesture() == GESTURES.PUSH) {
 							agent.exec();
 						}
 					}
