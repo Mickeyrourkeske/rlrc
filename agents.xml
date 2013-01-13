@@ -13,7 +13,7 @@
 		<z>2500.0</z>
 		<size>100.0</size>
 		<execString>kwrite /etc/issue</execString>
-	</CubeAgent>/usr/bin/xvkbd -xsendevent -text "n"
+	</CubeAgent>
 	
 	<!-- Example for libreoffice with xvkbd, there is no commandline interface for libreoffic-->
 	<!--<GestureAgent>
@@ -72,7 +72,7 @@ Sound control:
   
 libreoffice (only with xvkbd):
     xvkbd -xsendevent -text "n"       next slide
-    xvkbd -xsendevent -text "p"       privious slide
+    xvkbd -xsendevent -text "p"       previous slide
     xvkbd -xsendevent -text "b"       (un)blank slide
 
 -->

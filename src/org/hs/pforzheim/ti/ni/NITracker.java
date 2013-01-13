@@ -188,7 +188,8 @@ public class NITracker extends NI implements Runnable {
 		SwipeDetector swipeDetector = null;
 		try {
 			swipeDetector = new SwipeDetector();
-			LOGGER.info("Swipe min motion time: " + swipeDetector.getMotionTime() + "ms");
+			LOGGER.info("Swipe min motion time: " + swipeDetector.getMotionTime() + "ms\n"
+					+ "Swipe motion speed threshold: " + swipeDetector.getMotionSpeedThreshold() + "m/s");
 			
 			swipeDetector.getGeneralSwipeEvent().addObserver(new IObserver<DirectionVelocityAngleEventArgs>() {
 				@Override
@@ -215,6 +216,9 @@ public class NITracker extends NI implements Runnable {
 		try {
 			circleDetector = new CircleDetector();
 			
+			LOGGER.info("Max radius: " + circleDetector.getMaxRadius() + "\n"
+					+ "Min radius: " + circleDetector.getMinRadius());
+			
 			circleDetector.getCircleEvent().addObserver(new IObserver<CircleEventArgs>() {
 				@Override
 				public void update(IObservable<CircleEventArgs> obeservable, CircleEventArgs args) {
@@ -237,7 +241,7 @@ public class NITracker extends NI implements Runnable {
 							gesture = GESTURES.CIRCLE_CLOCKWISE;
 						}
 						else {
-							gesture = GESTURES.CIRCLE_CLOCKWISE;
+							gesture = GESTURES.CIRCLE_COUNTERCLOCKWISE;
 						}
 						for(GestureAgent agent : NICollector.gestureAgents) {
 							if(agent.getGesture() == gesture) {
@@ -275,6 +279,9 @@ public class NITracker extends NI implements Runnable {
 		PushDetector pushDetector = null;
 		try {
 			pushDetector = new PushDetector();
+			
+			LOGGER.info("Push immediate duration: " + pushDetector.getPushImmediateDuration() + "\n"
+					+ "Push immediate velocity " + pushDetector.getPushImmediateMinimumVelocity());
 			
 			pushDetector.getPushEvent().addObserver(new IObserver<VelocityAngleEventArgs>() {
 				

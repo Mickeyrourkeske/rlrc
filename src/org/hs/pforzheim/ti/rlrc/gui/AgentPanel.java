@@ -21,8 +21,13 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -36,6 +41,8 @@ import org.hs.pforzheim.ti.ni.NICollector;
 import org.hs.pforzheim.ti.rlrc.CubeAgent;
 import org.hs.pforzheim.ti.rlrc.GestureAgent;
 import org.hs.pforzheim.ti.rlrc.GestureAgent.GESTURES;
+
+import com.jogamp.newt.event.MouseAdapter;
 
 public class AgentPanel extends JPanel {
 	
@@ -108,6 +115,18 @@ public class AgentPanel extends JPanel {
 			GestureAgent agent = NICollector.gestureAgents.get(i);
 			createGestureLine(true, agent.getGesture(), agent.getCommand(), agent.getComment(), i + 2);
 		}
+		
+//		JButton plusButton = new JButton("+");
+//		plusButton.addActionListener(new ActionListener() {
+//			
+//			@Override
+//			public void actionPerformed(ActionEvent arg0) {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		});
+//		cubePanel.add(plusButton);
+		
 
 	}
 
@@ -175,19 +194,19 @@ public class AgentPanel extends JPanel {
 		gbc_lblZ.gridy = 1;
 		cubePanel.add(lblZ, gbc_lblZ);
 		
-		JLabel lblCommand_1 = new JLabel("Command");
-		GridBagConstraints gbc_lblCommand_1 = new GridBagConstraints();
-		gbc_lblCommand_1.insets = new Insets(0, 0, 5, 5);
-		gbc_lblCommand_1.gridx = 4;
-		gbc_lblCommand_1.gridy = 1;
-		cubePanel.add(lblCommand_1, gbc_lblCommand_1);
+		JLabel lblCommand = new JLabel("Command");
+		GridBagConstraints gbc_lblCommand = new GridBagConstraints();
+		gbc_lblCommand.insets = new Insets(0, 0, 5, 5);
+		gbc_lblCommand.gridx = 4;
+		gbc_lblCommand.gridy = 1;
+		cubePanel.add(lblCommand, gbc_lblCommand);
 		
-		JLabel lblComment_1 = new JLabel("Comment");
-		GridBagConstraints gbc_lblComment_1 = new GridBagConstraints();
-		gbc_lblComment_1.insets = new Insets(0, 0, 5, 0);
-		gbc_lblComment_1.gridx = 5;
-		gbc_lblComment_1.gridy = 1;
-		cubePanel.add(lblComment_1, gbc_lblComment_1);
+		JLabel lblComment = new JLabel("Comment");
+		GridBagConstraints gbc_lblComment = new GridBagConstraints();
+		gbc_lblComment.insets = new Insets(0, 0, 5, 0);
+		gbc_lblComment.gridx = 5;
+		gbc_lblComment.gridy = 1;
+		cubePanel.add(lblComment, gbc_lblComment);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
