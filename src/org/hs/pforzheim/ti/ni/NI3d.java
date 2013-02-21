@@ -24,7 +24,8 @@ import org.OpenNI.DepthMap;
 import org.OpenNI.GeneralException;
 import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
-import org.hs.pforzheim.ti.rlrc.CubeAgent;
+import org.hs.pforzheim.ti.rlrc.Collector;
+import org.hs.pforzheim.ti.rlrc.agent.CubeAgent;
 
 public class NI3d extends NI implements Runnable {
 
@@ -93,7 +94,7 @@ public class NI3d extends NI implements Runnable {
 				
 				
 				/* Agents */
-				for(CubeAgent agent : NICollector.cubeAgents) {
+				for(CubeAgent agent : Collector.cubeAgents) {
 					agent.clearHits();
 				}
 				
@@ -108,7 +109,7 @@ public class NI3d extends NI implements Runnable {
 							index++;
 							
 							/* Check if Agents are hit */
-							for(CubeAgent agent : NICollector.cubeAgents) {
+							for(CubeAgent agent : Collector.cubeAgents) {
 								float x1 = agent.getPosition().getX();
 								float y1 = agent.getPosition().getY();
 								float z1 = agent.getPosition().getZ();

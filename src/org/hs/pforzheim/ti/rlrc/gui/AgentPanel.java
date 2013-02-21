@@ -23,8 +23,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -37,19 +36,23 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
 import org.OpenNI.Point3D;
-import org.hs.pforzheim.ti.ni.NICollector;
-import org.hs.pforzheim.ti.rlrc.CubeAgent;
-import org.hs.pforzheim.ti.rlrc.GestureAgent;
-import org.hs.pforzheim.ti.rlrc.GestureAgent.GESTURES;
-
-import com.jogamp.newt.event.MouseAdapter;
+import org.hs.pforzheim.ti.rlrc.Collector;
+import org.hs.pforzheim.ti.rlrc.agent.CubeAgent;
+import org.hs.pforzheim.ti.rlrc.agent.GestureAgent;
+import org.hs.pforzheim.ti.rlrc.agent.GestureAgent.GESTURES;
 
 public class AgentPanel extends JPanel {
+	
+	private static final Logger LOGGER = Logger.getLogger(AgentPanel.class.getName());
+
 	
 	private static final long serialVersionUID = 1L;
 	
 	private JPanel cubePanel;
 	private JPanel gesturePanel;
+	
+	private int cubeRow;
+	private int gestureRow;
 
 	/**
 	 * Create the panel.
@@ -102,19 +105,24 @@ public class AgentPanel extends JPanel {
 		
 		initCubeRow();
 		
-		for(int i = 0; i < NICollector.cubeAgents.size(); i++) {
-			CubeAgent agent = NICollector.cubeAgents.get(i);
-			createCubeLine(true, agent.getPosition(), agent.getCommand(), agent.getComment(), i + 2);
+		for(cubeRow = 0; cubeRow < Collector.cubeAgents.size(); cubeRow++) {
+			CubeAgent agent = Collector.cubeAgents.get(cubeRow);
+			createCubeLine(true, agent.getPosition(), agent.getCommand(), agent.getComment(), cubeRow + 2);
 		}
+		cubeRow++;
+		createCubeLine(false, new Point3D(0, 0, 0), "", "", cubeRow + 2);
 		
 		
 		initGestureRow();
 		
 		
-		for(int i = 0; i < NICollector.gestureAgents.size(); i++) {
-			GestureAgent agent = NICollector.gestureAgents.get(i);
-			createGestureLine(true, agent.getGesture(), agent.getCommand(), agent.getComment(), i + 2);
+		for(gestureRow = 0; gestureRow < Collector.gestureAgents.size(); gestureRow++) {
+			GestureAgent agent = Collector.gestureAgents.get(gestureRow);
+			createGestureLine(true, agent.getGesture(), agent.getCommand(), agent.getComment(), gestureRow + 2);
 		}
+		gestureRow++;
+		createGestureLine(false, GESTURES.NONE, "", "", gestureRow + 2);
+		
 		
 //		JButton plusButton = new JButton("+");
 //		plusButton.addActionListener(new ActionListener() {
@@ -127,6 +135,39 @@ public class AgentPanel extends JPanel {
 //		});
 //		cubePanel.add(plusButton);
 		
+		
+		JPanel buttonPanel = new JPanel();
+		
+		JButton applyButton = new JButton("Apply");
+		applyButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				LOGGER.info("Apply new Agent list...");
+				//TODO
+				
+			}
+		});
+		buttonPanel.add(applyButton);
+		
+		JButton cancelButton = new JButton("Cancel");
+		applyButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				LOGGER.info("Remove new Agent list...");
+				// TODO
+				
+			}
+		});
+		buttonPanel.add(cancelButton);
+		
+		gbc_gesturePanel.gridx = 1;
+		gbc_gesturePanel.gridy = 1;
+		gbc_gesturePanel.weighty = 1;
+		gbc_gesturePanel.weightx = 1;
+		gbc_gesturePanel.anchor = GridBagConstraints.EAST;
+		add(buttonPanel, gbc_gesturePanel);
 
 	}
 

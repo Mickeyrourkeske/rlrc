@@ -36,8 +36,8 @@ import javax.media.opengl.glu.GLUquadric;
 
 import org.OpenNI.Point3D;
 import org.hs.pforzheim.ti.ni.NI3d;
-import org.hs.pforzheim.ti.ni.NICollector;
-import org.hs.pforzheim.ti.rlrc.CubeAgent;
+import org.hs.pforzheim.ti.rlrc.Collector;
+import org.hs.pforzheim.ti.rlrc.agent.CubeAgent;
 
 import com.jogamp.opengl.util.FPSAnimator;
 
@@ -75,7 +75,7 @@ public class Observer3DPanel extends GLJPanel implements GLEventListener {
 		addMouseMotionListener(new MouseMotionAdapter() { });
 		addMouseListener(new MouseAdapter() { });
 		
-		ni = NICollector.getNI3d();
+		ni = Collector.getNI3d();
 		ni.startCollectingRealPoints();
 	}
 
@@ -156,8 +156,8 @@ public class Observer3DPanel extends GLJPanel implements GLEventListener {
 		        ni.releaseRealWorldPoints();
 		        
 		        /* Print Hands */
-		        if(NICollector.getNiTracker() != null) {
-			        HashMap<Integer, Point3D> hands = NICollector.getNiTracker().getAndAcquireHands();
+		        if(Collector.getNiTracker() != null) {
+			        HashMap<Integer, Point3D> hands = Collector.getNiTracker().getAndAcquireHands();
 			        Set<Integer> set = hands.keySet();
 			        for(Integer id : set) {
 			        	Point3D point = hands.get(id);
@@ -171,13 +171,13 @@ public class Observer3DPanel extends GLJPanel implements GLEventListener {
 			        	glu.gluSphere(hand, 10, 20, 20);
 			        	gl.glTranslatef(point.getX(), -point.getY(), -point.getZ());
 			        }
-			        NICollector.getNiTracker().releaseHands();
+			        Collector.getNiTracker().releaseHands();
 		        }
 		        
 		        /* Print Cubes */
 		        gl.glBegin(GL2.GL_QUADS);
 		        
-		        for(CubeAgent agent : NICollector.cubeAgents) {
+		        for(CubeAgent agent : Collector.cubeAgents) {
 		        	if(agent.isHit()) {
 		        		gl.glColor4f(1.0f, 0.0f, 0.0f, 0.2f);
 		        	}

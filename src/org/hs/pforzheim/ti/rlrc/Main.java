@@ -19,7 +19,6 @@ package org.hs.pforzheim.ti.rlrc;
 import java.awt.EventQueue;
 import java.util.logging.Logger;
 
-import org.hs.pforzheim.ti.ni.NICollector;
 import org.hs.pforzheim.ti.rlrc.gui.MainPanel;
 
 
@@ -34,13 +33,13 @@ public class Main {
 	public Main(boolean GUI) {
 		LOGGER.info("rlrc starting...");
 
-		new NICollector();
+		new Collector();
 		
-		NICollector.startNITracker();
+		Collector.startNITracker();
 		
-		NICollector.readAgentsFromXML("agents.xml");
+		Collector.readAgentsFromXML("agents.xml");
 		
-		NICollector.getNI3d().startCollectingRealPoints();
+		Collector.getNI3d().startCollectingRealPoints();
 		
 		if(GUI) {
 			EventQueue.invokeLater(new Runnable() {

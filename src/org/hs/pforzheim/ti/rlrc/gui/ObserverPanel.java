@@ -35,9 +35,9 @@ import java.util.logging.Logger;
 import javax.swing.Timer;
 
 import org.hs.pforzheim.ti.ni.NI;
-import org.hs.pforzheim.ti.ni.NICollector;
 import org.hs.pforzheim.ti.ni.NIImage;
 import org.hs.pforzheim.ti.ni.NIVisual;
+import org.hs.pforzheim.ti.rlrc.Collector;
 
 /**
  * @author schrob
@@ -63,7 +63,7 @@ public class ObserverPanel extends Component {
 	
 	public ObserverPanel() {
 		LOGGER.info("Starting Image Observer");
-		this.ni = NICollector.getNIVisual();
+		this.ni = Collector.getNIVisual();
 		
 		dimension = new Dimension(NI.xRes, NI.yRes);
 		addMouseListener(new MouseAdapter() { });

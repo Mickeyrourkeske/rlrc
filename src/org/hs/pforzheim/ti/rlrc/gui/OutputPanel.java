@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
-import org.hs.pforzheim.ti.rlrc.Agent;
+import org.hs.pforzheim.ti.rlrc.agent.Agent;
 
 /**
  * @author schrob

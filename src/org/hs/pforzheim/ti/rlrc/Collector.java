@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with RLRC.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.hs.pforzheim.ti.ni;
+package org.hs.pforzheim.ti.rlrc;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,8 +24,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.OpenNI.Point3D;
-import org.hs.pforzheim.ti.rlrc.CubeAgent;
-import org.hs.pforzheim.ti.rlrc.GestureAgent;
+import org.hs.pforzheim.ti.ni.NI3d;
+import org.hs.pforzheim.ti.ni.NITracker;
+import org.hs.pforzheim.ti.ni.NIVisual;
+import org.hs.pforzheim.ti.rlrc.agent.CubeAgent;
+import org.hs.pforzheim.ti.rlrc.agent.GestureAgent;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -36,9 +39,9 @@ import org.w3c.dom.NodeList;
  * @author schrob
  *
  */
-public final class NICollector {
+public final class Collector {
 
-	private static final Logger LOGGER = Logger.getLogger(NICollector.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(Collector.class.getName());
 
 	public static ArrayList<CubeAgent> cubeAgents = null;
 	public static ArrayList<GestureAgent> gestureAgents = null;
@@ -48,7 +51,7 @@ public final class NICollector {
 	private static NITracker niTracker = null;
 	
 
-	public NICollector() {
+	public Collector() {
 		if(cubeAgents == null) {
 			cubeAgents = new ArrayList<CubeAgent>();
 		}

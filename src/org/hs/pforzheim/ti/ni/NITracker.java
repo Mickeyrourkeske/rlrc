@@ -29,8 +29,9 @@ import org.OpenNI.IObserver;
 import org.OpenNI.InactiveHandEventArgs;
 import org.OpenNI.Point3D;
 import org.OpenNI.StatusException;
-import org.hs.pforzheim.ti.rlrc.GestureAgent;
-import org.hs.pforzheim.ti.rlrc.GestureAgent.GESTURES;
+import org.hs.pforzheim.ti.rlrc.Collector;
+import org.hs.pforzheim.ti.rlrc.agent.GestureAgent;
+import org.hs.pforzheim.ti.rlrc.agent.GestureAgent.GESTURES;
 
 import com.primesense.NITE.CircleDetector;
 import com.primesense.NITE.CircleEventArgs;
@@ -195,7 +196,7 @@ public class NITracker extends NI implements Runnable {
 				@Override
 				public void update(IObservable<DirectionVelocityAngleEventArgs> obeservable, DirectionVelocityAngleEventArgs args) {
 					LOGGER.info(args.getDirection() + ": v=" + args.getVelocity() + "m/s");
-					for(GestureAgent agent : NICollector.gestureAgents) {
+					for(GestureAgent agent : Collector.gestureAgents) {
 						GESTURES gesture = GESTURES.getSwipeEnum(args.getDirection());
 						if(agent.getGesture() == gesture) {
 							agent.exec();
@@ -243,7 +244,7 @@ public class NITracker extends NI implements Runnable {
 						else {
 							gesture = GESTURES.CIRCLE_COUNTERCLOCKWISE;
 						}
-						for(GestureAgent agent : NICollector.gestureAgents) {
+						for(GestureAgent agent : Collector.gestureAgents) {
 							if(agent.getGesture() == gesture) {
 								agent.exec();
 							}
@@ -287,7 +288,7 @@ public class NITracker extends NI implements Runnable {
 				
 				@Override
 				public void update(IObservable<VelocityAngleEventArgs> arg0, VelocityAngleEventArgs arg1) {
-					for(GestureAgent agent : NICollector.gestureAgents) {
+					for(GestureAgent agent : Collector.gestureAgents) {
 						if(agent.getGesture() == GESTURES.PUSH) {
 							agent.exec();
 						}
