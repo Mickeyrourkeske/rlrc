@@ -93,15 +93,35 @@ public class NI {
 		}
 	}
 	
-	@Override
-	protected void finalize() throws Throwable {
+//	@Override
+//	protected void finalize() throws Throwable {
+//		LOGGER.info("finaliz");
+//		instance--;
+//		if(instance == 0) {
+//			LOGGER.info("Releasing context...");
+//			context.stopGeneratingAll();
+//			context.release();
+//		}
+//		super.finalize();
+//	}
+	
+	public void release() {
 		instance--;
 		if(instance == 0) {
-			LOGGER.info("Releasing context...");
-			context.stopGeneratingAll();
-			context.release();
+			releaseAll();
 		}
-		super.finalize();
+	}
+	
+	public static void releaseAll() {
+		instance = 0;
+		LOGGER.info("Releasing context...");
+		try {
+			context.stopGeneratingAll();
+		}
+		catch (StatusException e) {
+			LOGGER.info("Stop generationg all failed...");
+		}
+		context.release();
 	}
 	
 	protected static void logNodes() {

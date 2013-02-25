@@ -44,8 +44,8 @@ public class MainPanel {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setSize(new Dimension(1280, 800));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(new Dimension(1280, 800));
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[]{0, 0, 0};
 		gridBagLayout.rowHeights = new int[]{0, 0, 0, 0};
@@ -90,4 +90,5 @@ public class MainPanel {
 			e.printStackTrace();
 		}
 	}
+	
 }

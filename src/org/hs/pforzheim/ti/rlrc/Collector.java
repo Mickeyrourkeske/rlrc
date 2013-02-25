@@ -43,6 +43,8 @@ public final class Collector {
 
 	private static final Logger LOGGER = Logger.getLogger(Collector.class.getName());
 
+	public static String agentsFile = "agents.xml";
+	
 	public static ArrayList<CubeAgent> cubeAgents = null;
 	public static ArrayList<GestureAgent> gestureAgents = null;
 	
@@ -140,10 +142,23 @@ public final class Collector {
 		return element.getElementsByTagName(tag).item(0).getChildNodes().item(0).getNodeValue();
 	}
 	
-	//TODO public static void writeAgentsToXML(String xml)
+	public static void writeAgentsToXML(String xmlFile) {
+		
+	}
 	
-	//TODO
 	public static void disposeNI() {
+		LOGGER.info("dispose");
+		if(niVisual != null) {
+			niVisual.release();
+		}
+
+		if(niTracker != null) {
+			niTracker.release();
+		}
+		
+		if(ni3d != null) {
+			ni3d.release();
+		}
 		
 	}
 }

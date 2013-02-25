@@ -37,7 +37,7 @@ public class Main {
 		
 		Collector.startNITracker();
 		
-		Collector.readAgentsFromXML("agents.xml");
+		Collector.readAgentsFromXML(Collector.agentsFile);
 		
 		Collector.getNI3d().startCollectingRealPoints();
 		
@@ -79,5 +79,15 @@ public class Main {
 		else {
 			new Main(true);
 		}
+		
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				LOGGER.info("Shuting down...");
+				Collector.writeAgentsToXML(Collector.agentsFile);
+				Collector.disposeNI();
+			}
+		});
 	}
+	
 }
