@@ -86,7 +86,6 @@ public class MainPanel {
 		
 		try {
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

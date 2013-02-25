@@ -15,7 +15,7 @@ Compiled source #
 *.dmg
 *.gz
 *.iso
-*.jar
+#*.jar
 *.rar
 *.tar
 *.zip
@@ -36,3 +36,5 @@ Compiled source #
 Icon?
 ehthumbs.db
 Thumbs.db
+*~
+

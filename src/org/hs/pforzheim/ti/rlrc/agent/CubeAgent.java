@@ -55,7 +55,7 @@ public class CubeAgent extends Agent {
 	
 	public void clearHits() {
 		if(hits < THRESHOLD) {
-			hit = false;						// Allow new program start only if area was cleared before
+			hit = false;						// Allow new program to start only if area was cleared before
 		}
 		hits = 0;
 	}

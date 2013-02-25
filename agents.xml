@@ -1,79 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Agent>
-	<CubeAgent>
-		<x>0.0</x>
-		<y>0.0</y>
-		<z>500.0</z>
-		<size>100.0</size>
-		<execString>kwrite /etc/issue</execString>
-		<comment></comment>
-	</CubeAgent>
-	<CubeAgent>
-		<x>50.0</x>
-		<y>100.0</y>
-		<z>2500.0</z>
-		<size>100.0</size>
-		<execString>kwrite /etc/issue</execString>
-	</CubeAgent>
-	
-	<!-- Example for libreoffice with xvkbd, there is no commandline interface for libreoffic-->
-	<!--<GestureAgent>
-		<gesture>SWIPE_LEFT</gesture>
-		<execString>/usr/bin/xvkbd -xsendevent -text "n"</execString>
-	</GestureAgent>
-	<GestureAgent>
-		<gesture>SWIPE_RIGHT</gesture>
-		<execString>/usr/bin/xvkbd -xsendevent -text "p"</execString>
-	</GestureAgent>
-	<GestureAgent>
-		<gesture>SWIPE_UP</gesture>
-		<execString>/usr/bin/xvkbd -xsendevent -text "b"</execString>
-	</GestureAgent>-->
-	 
-	<GestureAgent>
-		<gesture>CIRCLE_CLOCKWISE</gesture>
-		<execString>amixer -q sset Master 3%+</execString>
-		<comment>Volume+</comment>
-	</GestureAgent>
-	<GestureAgent>
-		<gesture>CIRCLE_COUNTERCLOCKWISE</gesture>
-		<execString>amixer -q sset Master 3%-</execString>
-		<comment>Volume-</comment>
-	</GestureAgent>
-	
-	<!-- Example for amarok pause, back and forward -->
-	<GestureAgent>
-		<gesture>SWIPE_LEFT</gesture>
-		<execString>amarok -f</execString>
-		<comment>Next song</comment>
-	</GestureAgent>
-	<GestureAgent>
-		<gesture>SWIPE_RIGHT</gesture>
-		<execString>amarok -r</execString>
-		<comment>Previous Song</comment>
-	</GestureAgent>
-	<GestureAgent>
-		<gesture>PUSH</gesture>
-		<execString>amarok -t</execString>
-		<comment>Play / Pause</comment>
-	</GestureAgent>
+    <CubeAgent>
+        <x>0.0</x>
+        <y>0.0</y>
+        <z>500.0</z>
+        <size>100.0</size>
+        <execString>kwrite /etc/issue</execString>
+    </CubeAgent>
+    <CubeAgent>
+        <x>50.0</x>
+        <y>100.0</y>
+        <z>2500.0</z>
+        <size>100.0</size>
+        <execString>kwrite /etc/issue</execString>
+    </CubeAgent>
+    <GestureAgent>
+        <gesture>CIRCLE_CLOCKWISE</gesture>
+        <execString>amixer -q sset Master 3%+</execString>
+        <comment>Volume+</comment>
+    </GestureAgent>
+    <GestureAgent>
+        <gesture>CIRCLE_COUNTERCLOCKWISE</gesture>
+        <execString>amixer -q sset Master 3%-</execString>
+        <comment>Volume-</comment>
+    </GestureAgent>
+    <GestureAgent>
+        <gesture>SWIPE_LEFT</gesture>
+        <execString>amarok -f</execString>
+        <comment>Next song</comment>
+    </GestureAgent>
+    <GestureAgent>
+        <gesture>SWIPE_RIGHT</gesture>
+        <execString>amarok -r</execString>
+        <comment>Previous Song</comment>
+    </GestureAgent>
+    <GestureAgent>
+        <gesture>PUSH</gesture>
+        <execString>amarok -t</execString>
+        <comment>Play / Pause</comment>
+    </GestureAgent>
 </Agent>
-
-<!--
-Example commands:
-Amarok:
-    amarok -r                         previous song
-    amarok -f                         next song
-    amarok -t                         play/pause
-    
-Sound control:
-    amixer -q sset Master 3%+         3% louder
-    amixer -q sset Master 3%-         3% quieter
-    amixer -q sset Master toggle      mute/unmoute
-  
-libreoffice (only with xvkbd):
-    xvkbd -xsendevent -text "n"       next slide
-    xvkbd -xsendevent -text "p"       previous slide
-    xvkbd -xsendevent -text "b"       (un)blank slide
-
--->
-

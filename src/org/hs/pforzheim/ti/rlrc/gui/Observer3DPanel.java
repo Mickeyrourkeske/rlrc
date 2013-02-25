@@ -41,11 +41,6 @@ import org.hs.pforzheim.ti.rlrc.agent.CubeAgent;
 
 import com.jogamp.opengl.util.FPSAnimator;
 
-//import javax.media.opengl.DebugGL;
-//import javax.media.opengl.GLCanvas;
-
-//import com.sun.opengl.util.Animator;
-//import com.sun.opengl.util.FPSAnimator;
 
 /**
  * @author schrob
@@ -316,7 +311,6 @@ public class Observer3DPanel extends GLJPanel implements GLEventListener {
 
 	@Override
 	public void dispose(GLAutoDrawable arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 	

@@ -311,8 +311,7 @@ public class NITracker extends NI implements Runnable {
 			}
 		}
 		catch (StatusException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.warning("NITracker thread: " + e.getMessage());
 		}
 	}
 	

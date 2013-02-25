@@ -83,7 +83,8 @@ public class Main {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				LOGGER.info("Shuting down...");
+				/* Logger is not working while disposing */
+				System.out.println("Shuting down...");
 				Collector.writeAgentsToXML(Collector.agentsFile);
 				Collector.disposeNI();
 			}

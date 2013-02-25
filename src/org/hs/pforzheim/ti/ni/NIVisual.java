@@ -104,8 +104,7 @@ public class NIVisual extends NI {
 		int numPoints = 0; 
 		int maxDepth = 0;
 		
-		// a depth (an integer mm value) is used as an index  
-		// into the array 
+		/* a depth (an integer mm value) is used as an index into the array */ 
 		while(depthBuffer.remaining() > 0) { 
 			short depthVal = depthBuffer.get(); 
 			if(depthVal > maxDepth) 
@@ -116,11 +115,11 @@ public class NIVisual extends NI {
 			} 
 		} 
 		
-		// convert into a cummulative depth count (skipping histogram[0]) 
+		/* convert into a cummulative depth count (skipping histogram[0]) */ 
 		for (int i = 1; i <= maxDepth; i++)    // stage 3 
 			histogram[i] += histogram[i - 1]; 
 		
-		// convert cummulative depth into integers (0-255)
+		/* convert cummulative depth into integers (0-255) */
 		if (numPoints > 0) { 
 			for (int i = 1; i <= maxDepth; i++)   // skip histogram[0] 
 				histogram[i] = (int) (256 * (1.0f - (histogram[i] / (float) numPoints))); 

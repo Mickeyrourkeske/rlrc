@@ -17,11 +17,21 @@
 package org.hs.pforzheim.ti.rlrc;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.OpenNI.Point3D;
 import org.hs.pforzheim.ti.ni.NI3d;
@@ -143,11 +153,107 @@ public final class Collector {
 	}
 	
 	public static void writeAgentsToXML(String xmlFile) {
+		/* Logger is not working while disposing */
 		
+		
+		try {
+			Files.copy(Paths.get(xmlFile), Paths.get(xmlFile + "~"), StandardCopyOption.REPLACE_EXISTING);
+			System.out.println("Writing Agents to xml...");
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document document = builder.newDocument();
+			
+			Element root = document.createElement("Agent");
+			document.appendChild(root);
+			
+			for(CubeAgent agent : cubeAgents) {
+				Element cubeAgent = document.createElement("CubeAgent");
+				root.appendChild(cubeAgent);
+				
+				Element x = document.createElement("x");
+				x.appendChild(document.createTextNode(String.valueOf(agent.getPosition().getX())));
+				cubeAgent.appendChild(x);
+
+				Element y = document.createElement("y");
+				y.appendChild(document.createTextNode(String.valueOf(agent.getPosition().getY())));
+				cubeAgent.appendChild(y);
+
+				Element z = document.createElement("z");
+				z.appendChild(document.createTextNode(String.valueOf(agent.getPosition().getZ())));
+				cubeAgent.appendChild(z);
+				
+				Element size = document.createElement("size");
+				size.appendChild(document.createTextNode(String.valueOf(agent.getSize())));
+				cubeAgent.appendChild(size);
+
+				Element execString = document.createElement("execString");
+				execString.appendChild(document.createTextNode(agent.getCommand()));
+				cubeAgent.appendChild(execString);
+				
+				if(agent.getComment() != null) {
+					Element comment = document.createElement("comment");
+					comment.appendChild(document.createTextNode(agent.getComment()));
+					cubeAgent.appendChild(comment);
+				}
+				else {
+					System.out.println("No comment specified for " + agent.getCommand());
+				}
+			}
+			
+			for(GestureAgent agent : gestureAgents) {
+				Element cubeAgent = document.createElement("GestureAgent");
+				root.appendChild(cubeAgent);
+
+				Element gesture = document.createElement("gesture");
+				gesture.appendChild(document.createTextNode(agent.getGesture().name()));
+				cubeAgent.appendChild(gesture);
+
+				Element execString = document.createElement("execString");
+				execString.appendChild(document.createTextNode(agent.getCommand()));
+				cubeAgent.appendChild(execString);
+				
+				if(agent.getComment() != null) {
+					Element comment = document.createElement("comment");
+					comment.appendChild(document.createTextNode(agent.getComment()));
+					cubeAgent.appendChild(comment);
+				}
+				else {
+					System.out.println("No comment specified for " + agent.getCommand());
+				}
+			}
+			
+			
+			/* Save XML */
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			
+			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+	        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+	        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			
+			
+			DOMSource source = new DOMSource(document);
+			
+			FileWriter fileWriter = new FileWriter(xmlFile);
+			StreamResult streamResult = new StreamResult(fileWriter);
+			transformer.transform(source, streamResult);
+			
+			System.out.println("Agents saved as " + xmlFile);
+		}
+		catch(Exception e) {
+			System.out.println("Could not write Agents to xml file: " + e.getMessage());
+
+			try {
+				Files.copy(Paths.get(xmlFile + "~"), Paths.get(xmlFile), StandardCopyOption.REPLACE_EXISTING);
+			}
+			catch (IOException e1) { }
+			e.printStackTrace();
+		}
 	}
 	
 	public static void disposeNI() {
-		LOGGER.info("dispose");
+		/* Logger is not working while disposing */
+		System.out.println("Disposing NI...");
 		if(niVisual != null) {
 			niVisual.release();
 		}

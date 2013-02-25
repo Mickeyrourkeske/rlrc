@@ -83,10 +83,8 @@ public class AgentPanel extends JPanel {
 	public AgentPanel() {
 		setMinimumSize(new Dimension(1280, 10));
 		GridBagLayout gridBagLayout = new GridBagLayout();
-//		gridBagLayout.columnWidths = new int[]{640, 640};
-//		gridBagLayout.rowHeights = new int[]{500, 1};
-		gridBagLayout.columnWeights = new double[]{1,1};//{1.0, 1.0, Double.MIN_VALUE};
-		gridBagLayout.rowWeights = new double[]{0, 1};//{1.0, Double.MIN_VALUE};
+		gridBagLayout.columnWeights = new double[]{1,1};
+		gridBagLayout.rowWeights = new double[]{0, 1};
 		setLayout(gridBagLayout);
 		
 		
@@ -124,7 +122,13 @@ public class AgentPanel extends JPanel {
 					out += "\n";
 					
 					if(enabled) {
-						CubeAgent agent = new CubeAgent(point, size, command, comment);
+						CubeAgent agent = null;
+						if(!comment.equals("")) {
+							agent = new CubeAgent(point, size, command, comment);
+						}
+						else {
+							agent = new CubeAgent(point, size, command);
+						}
 						Collector.cubeAgents.add(agent);
 					}
 					
@@ -146,7 +150,13 @@ public class AgentPanel extends JPanel {
 					out += "\n";
 					
 					if(enabled) {
-						GestureAgent agent = new GestureAgent(gesture.name(), command, comment);
+						GestureAgent agent = null;
+						if(!comment.equals("")) {
+							agent = new GestureAgent(gesture.name(), command, comment);
+						}
+						else {
+							agent = new GestureAgent(gesture.name(), command);
+						}
 						Collector.gestureAgents.add(agent);
 					}
 				}
@@ -195,8 +205,6 @@ public class AgentPanel extends JPanel {
 		cubePanel = new JPanel();
 		cubePanel.setMinimumSize(new Dimension(640, 10));
 		GridBagConstraints gbc_cubePanel = new GridBagConstraints();
-//		gbc_cubePanel.insets = new Insets(0, 0, 0, 5);
-//		gbc_cubePanel.fill = GridBagConstraints.BOTH;
 		gbc_cubePanel.gridx = 0;
 		gbc_cubePanel.gridy = 0;
 		gbc_cubePanel.weighty = 1;
@@ -207,14 +215,12 @@ public class AgentPanel extends JPanel {
 		gbl_cubePanel.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0};
 		gbl_cubePanel.rowHeights = new int[]{0};
 		gbl_cubePanel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0, 1.0, Double.MIN_VALUE};
-//		gbl_cubePanel.rowWeights = new double[]{0, 0, 0, 0, 0, 1};//0.0, 0.0, 0.0, Double.MIN_VALUE};
 		cubePanel.setLayout(gbl_cubePanel);
 		
 		
 		gesturePanel = new JPanel();
 		gesturePanel.setMinimumSize(new Dimension(640, 10));
 		GridBagConstraints gbc_gesturePanel = new GridBagConstraints();
-//		gbc_gesturePanel.fill = GridBagConstraints.BOTH;
 		gbc_gesturePanel.gridx = 1;
 		gbc_gesturePanel.gridy = 0;
 		gbc_gesturePanel.weighty = 1;
@@ -225,7 +231,6 @@ public class AgentPanel extends JPanel {
 		gbl_gesturePanel.columnWidths = new int[]{0, 0, 0, 0, 0};
 		gbl_gesturePanel.rowHeights = new int[]{0};
 		gbl_gesturePanel.columnWeights = new double[]{0.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
-//		gbl_gesturePanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		gesturePanel.setLayout(gbl_gesturePanel);
 
 		/* Create GUI interface for the cubes */
