@@ -1,6 +1,8 @@
 RLRC
 ====
 
+This program was created as a project for the University of Pforzheim.
+There is currently no development.
 
 Installation
 ==
